@@ -708,3 +708,35 @@ summary:focus-visible {
   padding: 18px;
   text-align: center;
 }
+
+/* --------------------------------------------------------------------------
+   8. Smooth same-origin dashboard tab navigation
+   Keep the previous page visible until the next HTML page is ready, then
+   cross-fade between them. Supported by current Chromium-based browsers.
+   -------------------------------------------------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: smsys-dashboard-fade-out 180ms ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: smsys-dashboard-fade-in 180ms ease-out both;
+}
+
+@keyframes smsys-dashboard-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes smsys-dashboard-fade-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+}
