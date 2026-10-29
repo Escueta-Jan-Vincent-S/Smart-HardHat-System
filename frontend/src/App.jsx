@@ -6,7 +6,9 @@ import {
 
 import Site from "./pages/Site/Site";
 import CreateSite from "./pages/CreateSite/CreateSite";
+import CreateSiteExisiting from "./pages/CreateSite/CreateSiteExisiting";
 import SiteCreated from "./pages/SiteCreated/SiteCreated";
+import Verify from "./pages/Verify/verify";
 import Dashboard from "./pages/Dashboard/Dashboard";
 
 
@@ -33,10 +35,16 @@ function App() {
       />
 
 
-      {/* CREATE SITE */}
+      {/* CREATE SITE - NEW SUPERVISOR */}
       <Route
         path="/create-site"
         element={<CreateSite />}
+      />
+
+      {/* CREATE SITE - EXISTING SUPERVISOR */}
+      <Route
+        path="/create-site-existing"
+        element={<CreateSiteExisiting />}
       />
 
 
@@ -44,6 +52,13 @@ function App() {
       <Route
         path="/site-created"
         element={<SiteCreated />}
+      />
+
+
+      {/* VERIFY SITE RESULT */}
+      <Route
+        path="/verify"
+        element={<Verify />}
       />
 
 

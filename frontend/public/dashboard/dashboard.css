@@ -705,3 +705,33 @@ summary:focus-visible {
   padding: 18px;
   text-align: center;
 }
+
+
+/* SMSYS cross-page transition: visual-only; does not alter layout or data. */
+/* Supported in modern Chromium browsers; unsupported browsers keep normal navigation. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 140ms ease-out both smsys-page-fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 180ms ease-in both smsys-page-fade-in;
+}
+
+@keyframes smsys-page-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes smsys-page-fade-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+}
