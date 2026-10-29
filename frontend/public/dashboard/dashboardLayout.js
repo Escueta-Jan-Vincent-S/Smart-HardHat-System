@@ -73,6 +73,8 @@ if (app) {
     ["history", "Alerts History", "alertsHistory.html", "M6 2h9l5 5v15H6zm2 10h9v2H8zm0 4h9v2H8z"],
     ["zone", "Zone Localization", "zoneLocalization.html", "M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"],
     ["analytics", "Analytics", "analytics.html", "M3 20h18v2H3zM5 11h3v8H5zm5-4h3v12h-3zm5-4h3v16h-3z"],
+    ["siteinfo", "Site Information", "siteInformation.html", "M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1v5h5M8 12h8v2H8zm0 4h8v2H8z"],
+    ["settings", "Account Settings", "accountSettings.html", "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.2 4a8.2 8.2 0 0 0-.1-1.2l1.7-1.3-1.7-3-2 .8a8.1 8.1 0 0 0-1.5-.9L16.3 4h-3.5l-.4 2.4a8.1 8.1 0 0 0-1.5.9l-2-.8-1.7 3 1.7 1.3a8.2 8.2 0 0 0 0 2.4l-1.7 1.3 1.7 3 2-.8a8.1 8.1 0 0 0 1.5.9l.4 2.4h3.5l.4-2.4a8.1 8.1 0 0 0 1.5-.9l2 .8 1.7-3-1.7-1.3a8.2 8.2 0 0 0 0-1.2z"],
   ];
   const ico = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
   const items = NAV.map(([k, label, href, d]) =>

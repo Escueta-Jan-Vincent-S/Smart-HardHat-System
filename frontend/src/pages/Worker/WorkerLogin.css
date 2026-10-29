@@ -1,43 +1,20 @@
 /* Worker-only layout and Smart Hardhat controls.
    The page shell, header, title, card, inputs, and primary button reuse Site.css. */
 
+/* Reuse the same page, panel, and form dimensions as Dashboard Login. */
 .site-page.worker-site-page {
   min-height: 100vh;
   min-height: 100svh;
   height: auto;
   overflow-x: hidden;
   overflow-y: auto;
-  align-items: flex-start;
-  padding: clamp(18px, 3vh, 32px) 16px;
 }
 
-.worker-site-panel {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.worker-site-panel .site-header {
-  margin-bottom: 18px;
-}
-
-.worker-site-panel .site-title {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.worker-site-panel .site-title p {
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
+/* Keep the form's normal .site-card width and max-width from Site.css. */
 .site-page.worker-site-page .site-card.worker-login-card {
   display: flex;
   flex-direction: column;
   gap: 0;
-  width: 100%;
-  max-width: none;
 }
 
 .worker-field {
@@ -282,8 +259,6 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
-  width: 100%;
-  margin-top: 0;
 }
 
 .worker-confirm-btn svg {
@@ -315,19 +290,6 @@
 }
 
 @media (max-width: 480px) {
-  .site-page.worker-site-page {
-    padding: 18px 12px;
-  }
-
-  .worker-site-panel .site-title {
-    margin-bottom: 16px;
-  }
-
-  .site-page.worker-site-page .site-card.worker-login-card {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
   .worker-option {
     gap: 9px;
     padding-left: 10px;

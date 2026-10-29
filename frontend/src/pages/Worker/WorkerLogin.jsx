@@ -214,7 +214,7 @@ function WorkerLogin() {
       className="site-page worker-site-page"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="site-panel worker-site-panel">
+      <div className="site-panel">
         <header className="site-header">
           <span className="site-logo" aria-hidden="true">
             ⛑️
