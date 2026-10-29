@@ -7,22 +7,52 @@ import bgImage from "../../assets/images/landing-page-background.jpg";
 function CreateSiteExisiting() {
   const navigate = useNavigate();
 
+  // =========================
+  // FORM DATA
+  // =========================
+
   const [siteName, setSiteName] = useState("");
-  const [siteLocation, setSiteLocation] = useState("");
+  const [province, setProvince] = useState("");
+  const [municipalityCity, setMunicipalityCity] = useState("");
+  const [barangay, setBarangay] = useState("");
   const [supervisorName, setSupervisorName] = useState("");
+  const [supervisorPin, setSupervisorPin] = useState("");
+
+  // =========================
+  // STATUS
+  // =========================
+
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // =========================
+  // CREATE SITE FOR EXISTING SUPERVISOR
+  // =========================
+
   const handleConfirm = async () => {
     setError("");
+
+    // -------------------------
+    // VALIDATION
+    // -------------------------
 
     if (!siteName.trim()) {
       setError("Please enter the site name.");
       return;
     }
 
-    if (!siteLocation.trim()) {
-      setError("Please enter the site location.");
+    if (!province.trim()) {
+      setError("Please enter the province.");
+      return;
+    }
+
+    if (!municipalityCity.trim()) {
+      setError("Please enter the municipality or city.");
+      return;
+    }
+
+    if (!barangay.trim()) {
+      setError("Please enter the barangay.");
       return;
     }
 
@@ -31,8 +61,17 @@ function CreateSiteExisiting() {
       return;
     }
 
+    if (!/^\d{6}$/.test(supervisorPin)) {
+      setError("Please enter your existing 6-digit Supervisor PIN.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
+
+      // -------------------------
+      // SEND TO FLASK
+      // -------------------------
 
       const response = await fetch(
         "http://127.0.0.1:5000/api/sites/create-existing",
@@ -43,18 +82,29 @@ function CreateSiteExisiting() {
           },
           body: JSON.stringify({
             site_name: siteName.trim(),
-            site_location: siteLocation.trim(),
+            province: province.trim(),
+            municipality_city: municipalityCity.trim(),
+            barangay: barangay.trim(),
             supervisor_name: supervisorName.trim(),
+            supervisor_pin: supervisorPin,
           }),
         }
       );
 
       const data = await response.json();
 
+      // -------------------------
+      // CREATION FAILED
+      // -------------------------
+
       if (!response.ok || !data.success || !data.site) {
         setError(data.message || "Failed to create the site.");
         return;
       }
+
+      // -------------------------
+      // SITE CREATED
+      // -------------------------
 
       navigate("/site-created", {
         replace: true,
@@ -71,26 +121,39 @@ function CreateSiteExisiting() {
     }
   };
 
+  // =========================
+  // PAGE
+  // =========================
+
   return (
     <div
       className="create-site-page"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <div className="create-site-panel">
+        {/* HEADER */}
         <header className="cs-header">
-          <span className="cs-logo" aria-hidden="true">⛑️</span>
+          <span className="cs-logo" aria-hidden="true">
+            ⛑️
+          </span>
+
           <div className="cs-brand">
             <h2>SMSYS</h2>
             <p>SMART MONITORING SYSTEM</p>
           </div>
         </header>
 
+        {/* TITLE */}
         <div className="cs-title">
           <h1>Site Creation</h1>
-          <p>Enter the new site information for an existing supervisor.</p>
+          <p>
+            Enter the new site information for an existing supervisor.
+          </p>
         </div>
 
+        {/* FORM */}
         <div className="cs-card">
+          {/* SITE NAME */}
           <label className="cs-label" htmlFor="existing-site-name">
             Site Name
           </label>
@@ -103,26 +166,58 @@ function CreateSiteExisiting() {
               value={siteName}
               onChange={(event) => setSiteName(event.target.value)}
               disabled={isSubmitting}
-              autoComplete="organization"
             />
           </div>
 
-          <label className="cs-label" htmlFor="existing-site-location">
-            Site Location
+          {/* PROVINCE */}
+          <label className="cs-label" htmlFor="existing-site-province">
+            Province
           </label>
           <div className="cs-input">
             <span aria-hidden="true">📍</span>
             <input
-              id="existing-site-location"
+              id="existing-site-province"
               type="text"
-              placeholder="Enter site location"
-              value={siteLocation}
-              onChange={(event) => setSiteLocation(event.target.value)}
+              placeholder="Example: Laguna"
+              value={province}
+              onChange={(event) => setProvince(event.target.value)}
               disabled={isSubmitting}
-              autoComplete="street-address"
             />
           </div>
 
+          {/* MUNICIPALITY / CITY */}
+          <label className="cs-label" htmlFor="existing-site-municipality">
+            Municipality / City
+          </label>
+          <div className="cs-input">
+            <span aria-hidden="true">🏙️</span>
+            <input
+              id="existing-site-municipality"
+              type="text"
+              placeholder="Example: San Pablo City"
+              value={municipalityCity}
+              onChange={(event) => setMunicipalityCity(event.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {/* BARANGAY */}
+          <label className="cs-label" htmlFor="existing-site-barangay">
+            Barangay
+          </label>
+          <div className="cs-input">
+            <span aria-hidden="true">📌</span>
+            <input
+              id="existing-site-barangay"
+              type="text"
+              placeholder="Example: San Roque"
+              value={barangay}
+              onChange={(event) => setBarangay(event.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {/* SUPERVISOR FULL NAME */}
           <label className="cs-label" htmlFor="existing-supervisor-name">
             Supervisor Full Name
           </label>
@@ -131,14 +226,35 @@ function CreateSiteExisiting() {
             <input
               id="existing-supervisor-name"
               type="text"
-              placeholder="Enter registered supervisor full name"
+              placeholder="Enter your registered full name"
               value={supervisorName}
               onChange={(event) => setSupervisorName(event.target.value)}
               disabled={isSubmitting}
-              autoComplete="name"
             />
           </div>
 
+          {/* EXISTING SUPERVISOR PIN */}
+          <label className="cs-label" htmlFor="existing-supervisor-pin">
+            Supervisor PIN
+          </label>
+          <div className="cs-input">
+            <span aria-hidden="true">🔐</span>
+            <input
+              id="existing-supervisor-pin"
+              type="password"
+              placeholder="Enter your existing 6-digit PIN"
+              value={supervisorPin}
+              onChange={(event) =>
+                setSupervisorPin(event.target.value.replace(/\D/g, "").slice(0, 6))
+              }
+              inputMode="numeric"
+              maxLength={6}
+              autoComplete="off"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {/* ERROR */}
           {error && (
             <p
               role="alert"
@@ -153,6 +269,7 @@ function CreateSiteExisiting() {
             </p>
           )}
 
+          {/* CONFIRM */}
           <button
             type="button"
             className="cs-confirm-btn"
@@ -162,6 +279,7 @@ function CreateSiteExisiting() {
             {isSubmitting ? "CREATING SITE..." : "✓ CONFIRM"}
           </button>
 
+          {/* BACK */}
           <button
             type="button"
             className="cs-back-btn"

@@ -552,23 +552,37 @@ def create_site_existing_supervisor():
         return jsonify({"success": False, "message": "No data was received."}), 400
 
     site_name = str(data.get("site_name", "")).strip()
-    site_location = str(data.get("site_location", "")).strip()
+    province = str(data.get("province", "")).strip()
+    municipality_city = str(data.get("municipality_city", "")).strip()
+    barangay = str(data.get("barangay", "")).strip()
     supervisor_name = str(data.get("supervisor_name", "")).strip()
+    supervisor_pin = str(data.get("supervisor_pin", "")).strip()
 
     if not site_name:
         return jsonify({"success": False, "message": "Site name is required."}), 400
-    if not site_location:
-        return jsonify({"success": False, "message": "Site location is required."}), 400
+    if not province:
+        return jsonify({"success": False, "message": "Province is required."}), 400
+    if not municipality_city:
+        return jsonify({"success": False, "message": "Municipality or city is required."}), 400
+    if not barangay:
+        return jsonify({"success": False, "message": "Barangay is required."}), 400
     if not supervisor_name:
         return jsonify({"success": False, "message": "Supervisor full name is required."}), 400
+    if not supervisor_pin:
+        return jsonify({"success": False, "message": "Supervisor PIN is required."}), 400
+    if not supervisor_pin.isdigit() or len(supervisor_pin) != 6:
+        return jsonify({"success": False, "message": "Supervisor PIN must be 6 digits."}), 400
+
+    # Keep the existing database schema: the structured address fields are
+    # combined into the existing site_location column.
+    site_location = f"{barangay}, {municipality_city}, {province}"
 
     connection = get_database()
     cursor = connection.cursor()
 
     try:
-        # Reuse the most recently saved PIN for this supervisor. This prevents
-        # the Existing Supervisor flow from assigning a new PIN each time a site
-        # is created. The New Supervisor flow still generates a fresh PIN.
+        # Validate against the most recently saved supervisor record so the
+        # entered name and PIN must both match before any site is inserted.
         existing_supervisor = cursor.execute(
             """
             SELECT id, full_name, supervisor_pin
@@ -580,11 +594,17 @@ def create_site_existing_supervisor():
             (supervisor_name,),
         ).fetchone()
 
-        if existing_supervisor is None:
+        if (
+            existing_supervisor is None
+            or not secrets.compare_digest(
+                str(existing_supervisor["supervisor_pin"]).strip(),
+                supervisor_pin,
+            )
+        ):
             return jsonify({
                 "success": False,
-                "message": "No existing supervisor was found with that full name. Check the spelling or choose New Supervisor.",
-            }), 404
+                "message": "Supervisor full name or PIN is incorrect. Please check your details.",
+            }), 401
 
         while True:
             site_code = generate_site_code(site_name)
@@ -595,9 +615,9 @@ def create_site_existing_supervisor():
             if exists is None:
                 break
 
-        # The current database stores a supervisor record per site, so copy the
-        # supervisor's current PIN into this site's supervisor record.
-        supervisor_pin = existing_supervisor["supervisor_pin"]
+        # Each site has its own supervisor row, but the existing supervisor's
+        # verified PIN is reused rather than generating a new one.
+        verified_pin = str(existing_supervisor["supervisor_pin"]).strip()
         created_at = datetime.now().astimezone().isoformat(timespec="seconds")
 
         cursor.execute(
@@ -616,7 +636,7 @@ def create_site_existing_supervisor():
                 site_id, full_name, supervisor_pin, created_at
             ) VALUES (?, ?, ?, ?)
             """,
-            (site_id, existing_supervisor["full_name"], supervisor_pin, created_at),
+            (site_id, existing_supervisor["full_name"], verified_pin, created_at),
         )
 
         connection.commit()
@@ -629,8 +649,11 @@ def create_site_existing_supervisor():
                 "site_name": site_name,
                 "site_code": site_code,
                 "site_location": site_location,
+                "province": province,
+                "municipality_city": municipality_city,
+                "barangay": barangay,
                 "supervisor_name": existing_supervisor["full_name"],
-                "supervisor_pin": supervisor_pin,
+                "supervisor_pin": verified_pin,
                 "status": "Active",
                 "created_at": created_at,
             },
@@ -738,6 +761,392 @@ def verify_site():
         return jsonify({
             "success": False,
             "message": "Failed to verify the site.",
+        }), 500
+
+    finally:
+        connection.close()
+
+
+# ============================================================
+# DASHBOARD LOGIN (SITE + SUPERVISOR CREDENTIALS)
+# ============================================================
+
+@app.route("/api/dashboard/login", methods=["POST"])
+def dashboard_login():
+    """Verify dashboard credentials, including the saved supervisor full name."""
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"success": False, "message": "No data was received."}), 400
+
+    site_name = str(data.get("site_name", "")).strip()
+    site_code = str(data.get("site_code", "")).strip()
+    supervisor_name = str(data.get("full_name", "")).strip()
+    supervisor_pin = str(data.get("supervisor_pin", "")).strip()
+
+    if not site_name:
+        return jsonify({"success": False, "message": "Site Name is required."}), 400
+    if not site_code:
+        return jsonify({"success": False, "message": "Site Code is required."}), 400
+    if not supervisor_name:
+        return jsonify({"success": False, "message": "Full Name is required."}), 400
+    if not supervisor_pin:
+        return jsonify({"success": False, "message": "Supervisor PIN is required."}), 400
+
+    connection = get_database()
+
+    try:
+        site = connection.execute(
+            """
+            SELECT
+                sites.id,
+                sites.site_name,
+                sites.site_code,
+                sites.site_location,
+                sites.status,
+                sites.created_at,
+                supervisors.id AS supervisor_id,
+                supervisors.full_name AS supervisor_name
+            FROM sites
+            INNER JOIN supervisors ON supervisors.site_id = sites.id
+            WHERE LOWER(TRIM(sites.site_name)) = LOWER(?)
+              AND sites.site_code = ?
+              AND LOWER(TRIM(supervisors.full_name)) = LOWER(?)
+              AND supervisors.supervisor_pin = ?
+            LIMIT 1
+            """,
+            (site_name, site_code, supervisor_name, supervisor_pin),
+        ).fetchone()
+
+        if site is None:
+            return jsonify({
+                "success": False,
+                "message": "Invalid Site Name, Site Code, Full Name, or Supervisor PIN.",
+            }), 401
+
+        # Create the same short-lived supervisor session used by dashboard APIs.
+        issued_at = datetime.now().astimezone()
+        expires_at = issued_at + timedelta(hours=12)
+        access_token = secrets.token_urlsafe(32)
+
+        connection.execute(
+            """
+            INSERT INTO supervisor_sessions (
+                token_hash, supervisor_id, site_id, created_at, expires_at
+            ) VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                hash_access_token(access_token),
+                site["supervisor_id"],
+                site["id"],
+                issued_at.isoformat(timespec="seconds"),
+                expires_at.isoformat(timespec="seconds"),
+            ),
+        )
+        connection.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Dashboard login successful.",
+            "site": {
+                **serialize_site(site),
+                "supervisor_name": site["supervisor_name"],
+                "access_token": access_token,
+                "token_type": "Bearer",
+                "expires_at": expires_at.isoformat(timespec="seconds"),
+            },
+        }), 200
+
+    except Exception as error:
+        app.logger.exception("Dashboard login failed: %s", error)
+        return jsonify({
+            "success": False,
+            "message": "Failed to verify dashboard login.",
+        }), 500
+
+    finally:
+        connection.close()
+
+
+# ============================================================
+# WORKER LOGIN / SMART HARDHAT AVAILABILITY
+# ============================================================
+
+@app.route("/api/workers/available-hardhats", methods=["GET"])
+def available_worker_hardhats():
+    """List the actual hardhats registered to a site and mark their assignment state."""
+    site_code = str(request.args.get("site_code", "")).strip()
+    full_name = str(request.args.get("full_name", "")).strip()
+
+    if not site_code:
+        return jsonify({
+            "success": False,
+            "message": "Site Code is required.",
+            "hardhats": [],
+        }), 400
+
+    connection = get_database()
+
+    try:
+        site = connection.execute(
+            """
+            SELECT id, site_name, site_code, status
+            FROM sites
+            WHERE UPPER(TRIM(site_code)) = UPPER(?)
+            LIMIT 1
+            """,
+            (site_code,),
+        ).fetchone()
+
+        if site is None:
+            return jsonify({
+                "success": False,
+                "message": "No site was found with that Site Code.",
+                "hardhats": [],
+            }), 404
+
+        if normalized_status(site["status"]) not in {"active", "existing"}:
+            return jsonify({
+                "success": False,
+                "message": "This construction site is not active.",
+                "hardhats": [],
+            }), 403
+
+        rows = connection.execute(
+            """
+            SELECT
+                h.id,
+                h.device_code,
+                h.worker_id,
+                w.full_name AS assigned_worker_name,
+                w.status AS assigned_worker_status
+            FROM smart_hardhats AS h
+            LEFT JOIN workers AS w ON w.id = h.worker_id
+            WHERE h.site_id = ?
+            ORDER BY h.device_code COLLATE NOCASE
+            """,
+            (site["id"],),
+        ).fetchall()
+
+        hardhats = []
+        for row in rows:
+            assigned_to_current_worker = bool(
+                full_name
+                and row["assigned_worker_name"]
+                and normalized_status(row["assigned_worker_status"]) == "active"
+                and row["assigned_worker_name"].strip().casefold() == full_name.casefold()
+            )
+            is_available = row["worker_id"] is None or assigned_to_current_worker
+
+            if assigned_to_current_worker:
+                display_status = "Assigned to you"
+            elif row["worker_id"] is None:
+                display_status = "Available"
+            else:
+                display_status = "In Use"
+
+            hardhats.append({
+                "id": row["id"],
+                "device_code": row["device_code"],
+                "is_available": is_available,
+                "assigned_to_current_worker": assigned_to_current_worker,
+                "display_status": display_status,
+            })
+
+        message = None
+        if not hardhats:
+            message = "No Smart Hardhats are registered for this site yet."
+
+        return jsonify({
+            "success": True,
+            "site": {
+                "id": site["id"],
+                "site_name": site["site_name"],
+                "site_code": site["site_code"],
+            },
+            "hardhats": hardhats,
+            "message": message,
+        }), 200
+
+    except Exception as error:
+        app.logger.exception("Loading available worker hardhats failed: %s", error)
+        return jsonify({
+            "success": False,
+            "message": "Failed to load Smart Hardhats for this site.",
+            "hardhats": [],
+        }), 500
+
+    finally:
+        connection.close()
+
+
+@app.route("/api/workers/login", methods=["POST"])
+def worker_login():
+    """Register/find a worker and atomically assign one available hardhat to them."""
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"success": False, "message": "No data was received."}), 400
+
+    full_name = str(data.get("full_name", "")).strip()
+    site_code = str(data.get("site_code", "")).strip()
+    hardhat_code = str(data.get("hardhat_code", "")).strip()
+
+    if not full_name:
+        return jsonify({"success": False, "message": "Full Name is required."}), 400
+    if not site_code:
+        return jsonify({"success": False, "message": "Site Code is required."}), 400
+    if not hardhat_code:
+        return jsonify({"success": False, "message": "Please select a Smart Hardhat."}), 400
+
+    connection = get_database()
+
+    try:
+        # Lock writers while checking and updating the assignment so two workers
+        # cannot claim the same available hardhat at the same time.
+        connection.execute("BEGIN IMMEDIATE")
+
+        site = connection.execute(
+            """
+            SELECT id, site_name, site_code, status
+            FROM sites
+            WHERE UPPER(TRIM(site_code)) = UPPER(?)
+            LIMIT 1
+            """,
+            (site_code,),
+        ).fetchone()
+
+        if site is None:
+            connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": "No site was found with that Site Code.",
+            }), 404
+
+        if normalized_status(site["status"]) not in {"active", "existing"}:
+            connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": "This construction site is not active.",
+            }), 403
+
+        hardhat = connection.execute(
+            """
+            SELECT id, device_code, worker_id
+            FROM smart_hardhats
+            WHERE site_id = ?
+              AND UPPER(TRIM(device_code)) = UPPER(?)
+            LIMIT 1
+            """,
+            (site["id"], hardhat_code),
+        ).fetchone()
+
+        if hardhat is None:
+            connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": "That Smart Hardhat is not registered to this site. Refresh the list and try again.",
+            }), 404
+
+        worker = connection.execute(
+            """
+            SELECT id, full_name, status
+            FROM workers
+            WHERE site_id = ?
+              AND LOWER(TRIM(full_name)) = LOWER(?)
+            LIMIT 1
+            """,
+            (site["id"], full_name),
+        ).fetchone()
+
+        # A hardhat assigned to a different worker cannot be claimed by another name.
+        if hardhat["worker_id"] is not None and (
+            worker is None or hardhat["worker_id"] != worker["id"]
+        ):
+            connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": "This Smart Hardhat is already in use. Please select an available one.",
+            }), 409
+
+        if worker is not None and normalized_status(worker["status"]) != "active":
+            connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": "This worker account is not active. Please contact the site supervisor.",
+            }), 403
+
+        if worker is None:
+            created_at = datetime.now().astimezone().isoformat(timespec="seconds")
+            cursor = connection.execute(
+                """
+                INSERT INTO workers (site_id, full_name, worker_code, status, created_at)
+                VALUES (?, ?, NULL, 'Active', ?)
+                """,
+                (site["id"], full_name, created_at),
+            )
+            worker_id = cursor.lastrowid
+            saved_worker_name = full_name
+        else:
+            worker_id = worker["id"]
+            saved_worker_name = worker["full_name"]
+
+        # If this worker switches hardhats, release their previous assignment only
+        # after the newly selected hardhat has been verified as claimable.
+        connection.execute(
+            """
+            UPDATE smart_hardhats
+            SET worker_id = NULL
+            WHERE site_id = ? AND worker_id = ? AND id <> ?
+            """,
+            (site["id"], worker_id, hardhat["id"]),
+        )
+
+        assignment = connection.execute(
+            """
+            UPDATE smart_hardhats
+            SET worker_id = ?
+            WHERE id = ?
+              AND site_id = ?
+              AND (worker_id IS NULL OR worker_id = ?)
+            """,
+            (worker_id, hardhat["id"], site["id"], worker_id),
+        )
+
+        if assignment.rowcount != 1:
+            connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": "This Smart Hardhat was just assigned to another worker. Refresh the list and try again.",
+            }), 409
+
+        connection.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Worker confirmed and Smart Hardhat assigned successfully.",
+            "site": {
+                "id": site["id"],
+                "site_name": site["site_name"],
+                "site_code": site["site_code"],
+            },
+            "worker": {
+                "id": worker_id,
+                "full_name": saved_worker_name,
+                "status": "Active",
+            },
+            "hardhat": {
+                "id": hardhat["id"],
+                "device_code": hardhat["device_code"],
+            },
+        }), 200
+
+    except Exception as error:
+        connection.rollback()
+        app.logger.exception("Worker login failed: %s", error)
+        return jsonify({
+            "success": False,
+            "message": "Failed to confirm worker login.",
         }), 500
 
     finally:
