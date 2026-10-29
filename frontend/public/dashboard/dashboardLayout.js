@@ -66,15 +66,15 @@ if (app) {
   app.classList.add("page");
   const active = document.body.dataset.active;
   const NAV = [
-    ["dashboard", "Dashboard", "../dashboard.html", "M3 3h8v10H3zm10 0h8v6h-8zM3 15h8v6H3zm10-4h8v10h-8z"],
-    ["ppe", "PPE Status", "PpeStatus.html", "M4 6h3l1.5-2h7L17 6h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"],
-    ["drowsy", "Drowsiness Status", "drowsinessStatus.html", "M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"],
-    ["devices", "Device Connectivity", "deviceConnectivity.html", "M3 4h14v10H3zm4 12h6v2H7zM19 8h2v10h-2z"],
-    ["history", "Alerts History", "alertsHistory.html", "M6 2h9l5 5v15H6zm2 10h9v2H8zm0 4h9v2H8z"],
-    ["zone", "Zone Localization", "zoneLocalization.html", "M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"],
-    ["analytics", "Analytics", "analytics.html", "M3 20h18v2H3zM5 11h3v8H5zm5-4h3v12h-3zm5-4h3v16h-3z"],
-    ["siteinfo", "Site Information", "siteInformation.html", "M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1v5h5M8 12h8v2H8zm0 4h8v2H8z"],
-    ["settings", "Account Settings", "accountSettings.html", "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.2 4a8.2 8.2 0 0 0-.1-1.2l1.7-1.3-1.7-3-2 .8a8.1 8.1 0 0 0-1.5-.9L16.3 4h-3.5l-.4 2.4a8.1 8.1 0 0 0-1.5.9l-2-.8-1.7 3 1.7 1.3a8.2 8.2 0 0 0 0 2.4l-1.7 1.3 1.7 3 2-.8a8.1 8.1 0 0 0 1.5.9l.4 2.4h3.5l.4-2.4a8.1 8.1 0 0 0 1.5-.9l2 .8 1.7-3-1.7-1.3a8.2 8.2 0 0 0 0-1.2z"],
+    ["dashboard", "Dashboard", "/dashboard/dashboard.html", "M3 3h8v10H3zm10 0h8v6h-8zM3 15h8v6H3zm10-4h8v10h-8z"],
+    ["ppe", "PPE Status", "/dashboard/dashboardTabs/ppeStatus.html", "M4 6h3l1.5-2h7L17 6h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"],
+    ["drowsy", "Drowsiness Status", "/dashboard/dashboardTabs/drowsinessStatus.html", "M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"],
+    ["devices", "Device Connectivity", "/dashboard/dashboardTabs/deviceConnectivity.html", "M3 4h14v10H3zm4 12h6v2H7zM19 8h2v10h-2z"],
+    ["history", "Alerts History", "/dashboard/dashboardTabs/alertsHistory.html", "M6 2h9l5 5v15H6zm2 10h9v2H8zm0 4h9v2H8z"],
+    ["zone", "Zone Localization", "/dashboard/dashboardTabs/zoneLocalization.html", "M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"],
+    ["analytics", "Analytics", "/dashboard/dashboardTabs/analytics.html", "M3 20h18v2H3zM5 11h3v8H5zm5-4h3v12h-3zm5-4h3v16h-3z"],
+    ["siteinfo", "Site Information", "/dashboard/dashboardTabs/siteInformation.html", "M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1v5h5M8 12h8v2H8zm0 4h8v2H8z"],
+    ["settings", "Account Settings", "/dashboard/dashboardTabs/accountSettings.html", "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.2 4a8.2 8.2 0 0 0-.1-1.2l1.7-1.3-1.7-3-2 .8a8.1 8.1 0 0 0-1.5-.9L16.3 4h-3.5l-.4 2.4a8.1 8.1 0 0 0-1.5.9l-2-.8-1.7 3 1.7 1.3a8.2 8.2 0 0 0 0 2.4l-1.7 1.3 1.7 3 2-.8a8.1 8.1 0 0 0 1.5.9l.4 2.4h3.5l.4-2.4a8.1 8.1 0 0 0 1.5-.9l2 .8 1.7-3-1.7-1.3a8.2 8.2 0 0 0 0-1.2z"],
   ];
   const ico = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
   const items = NAV.map(([k, label, href, d]) =>
