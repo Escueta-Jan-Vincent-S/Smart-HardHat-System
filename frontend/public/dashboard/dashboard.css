@@ -680,3 +680,28 @@ summary:focus-visible {
   border: 1px solid var(--border); border-radius: 16px;
 }
 .hbtn:hover { filter: brightness(1.2); }
+/* PPE status page: placeholders for sites without a saved detection frame. */
+.frame-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.frame figcaption {
+  min-height: 20px;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ppe-loading {
+  padding: 18px;
+  text-align: center;
+}

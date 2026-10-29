@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMSYS - PPE Status</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="../dashboard.css" />
+  </head>
+  <body data-active="ppe" data-navset="dashboard">
+    <div id="app">
+      <h1 class="dash-title">PPE Monitoring</h1>
+
+      <!-- Summary cards -->
+      <section class="dcard stat g-green" style="left:325px;top:160px;width:345px;height:135px">
+        <h3>PPE Compliance</h3><div class="big" id="pCompliant">—</div><p>Compliant</p>
+        <svg class="stat-ico" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/></svg>
+      </section>
+      <section class="dcard stat g-red" style="left:700px;top:160px;width:345px;height:135px">
+        <h3>PPE Violations</h3><div class="big" id="pViolation">—</div><p>Violation</p>
+        <svg class="stat-ico" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM8 12h9v2H8zm0 4h9v2H8z"/></svg>
+      </section>
+      <section class="dcard stat g-gray" style="left:1075px;top:160px;width:345px;height:135px">
+        <h3>Unmonitored</h3><div class="big" id="pUnmon">—</div><p>No Data</p>
+        <svg class="stat-ico" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 16h-2v-2h2zm2.1-7.8-.9.9c-.7.7-1.2 1.2-1.2 2.6h-2v-.5c0-1 .5-1.9 1.2-2.6l1.2-1.3c.4-.3.6-.8.6-1.3a2 2 0 0 0-4 0H7a4 4 0 0 1 8 0c0 .9-.4 1.6-.9 2.2z"/></svg>
+      </section>
+
+      <!-- PPE table -->
+      <section class="dcard g-panel" style="left:325px;top:325px;width:1095px;height:300px">
+        <h3>PPE Status Table</h3>
+        <div class="tbl" id="ppeTable"><p class="ppe-loading">Loading PPE status...</p></div>
+      </section>
+
+      <!-- Bottom row -->
+      <section class="dcard g-panel" style="left:325px;top:655px;width:740px;height:337px">
+        <h3>PPE Detection Frames</h3>
+        <div class="frames" id="frames"><div class="frame"><div class="frame-img frame-placeholder">Loading frames...</div><figcaption>Latest monitoring images</figcaption></div></div>
+      </section>
+      <section class="dcard g-panel" style="left:1090px;top:655px;width:330px;height:337px">
+        <h3>PPE Status Breakdown</h3>
+        <div class="pie-wrap">
+          <div class="pie" id="pie"></div>
+          <div class="legend" id="legend"></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../dashboardLayout.js"></script>
+  </body>
+</html>

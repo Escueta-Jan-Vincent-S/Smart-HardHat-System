@@ -455,6 +455,9 @@ if (app) {
           const nextUrl = new URL(window.location.href);
           nextUrl.searchParams.set("site_id", currentTabSiteId);
           window.history.replaceState({}, "", nextUrl);
+          window.dispatchEvent(new CustomEvent("smsys:site-change", {
+            detail: { siteId: currentTabSiteId }
+          }));
           const dropdown = link.closest("details");
           if (dropdown) dropdown.open = false;
         });
@@ -470,8 +473,271 @@ if (app) {
   loadOwnedSitesForTab();
 }
 
-/* ---------- 4. Sample data + renderers (tab pages only) ---------- */
-if (app) {
+/* ---------- 4. Real PPE Status page ---------- */
+if (app && document.body.dataset.active === "ppe") {
+  const escapePPE = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
+
+  const setPPEText = (id, value) => {
+    const element = $(id);
+    if (element) element.textContent = value == null ? "—" : String(value);
+  };
+
+  const formatPPEDateTime = (value) => {
+    if (!value) return "—";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return String(value);
+    return `${parsed.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} ${parsed.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  };
+
+  const statusDot = (value) => {
+    const status = String(value || "Unmonitored").toLowerCase();
+    if (status === "compliant") return '<i class="status-dot yes" title="Compliant">✓</i>';
+    if (status === "violation") return '<i class="status-dot no" title="Violation">✕</i>';
+    return '<i class="status-dot na" title="Unmonitored">?</i>';
+  };
+
+  const statusPill = (value) => {
+    const status = String(value || "Unmonitored");
+    const className = status === "Compliant" ? "n" : status === "Violation" ? "d" : "u";
+    return `<span class="pill ${className}">${escapePPE(status)}</span>`;
+  };
+
+  const renderPPETable = (records) => {
+    const container = $("ppeTable");
+    if (!container) return;
+
+    const headings = ["Device ID", "Worker Name", "Hardhat", "Safety Vest", "Gloves", "Safety Boots", "Overall Status", "Last Updated"];
+    const header = `<thead><tr>${headings.map((heading) => `<th>${heading}</th>`).join("")}</tr></thead>`;
+
+    if (!records || records.length === 0) {
+      const emptyMessage = sessionStorage.getItem("smsys_site_id")
+        ? "No PPE monitoring records or devices are registered for this site."
+        : "No site is available for this supervisor.";
+      container.innerHTML = `<table class="table">${header}<tbody><tr><td colspan="8">${emptyMessage}</td></tr></tbody></table>`;
+      return;
+    }
+
+    const rows = records.map((record) => `
+      <tr>
+        <td>${escapePPE(record.device_id || "—")}</td>
+        <td>${escapePPE(record.worker_name || "Unassigned")}</td>
+        <td>${statusDot(record.hardhat)}</td>
+        <td>${statusDot(record.vest)}</td>
+        <td>${statusDot(record.gloves)}</td>
+        <td>${statusDot(record.boots)}</td>
+        <td>${statusPill(record.overall_status)}</td>
+        <td>${escapePPE(formatPPEDateTime(record.captured_at))}</td>
+      </tr>
+    `).join("");
+
+    container.innerHTML = `<table class="table">${header}<tbody>${rows}</tbody></table>`;
+  };
+
+  const renderPPEBreakdown = (summary) => {
+    const pie = $("pie");
+    const legend = $("legend");
+    if (!pie || !legend) return;
+
+    const compliant = Number(summary.compliant_devices || 0);
+    const violation = Number(summary.violation_devices || 0);
+    const unmonitored = Number(summary.unmonitored_devices || 0);
+    const total = compliant + violation + unmonitored;
+
+    if (total === 0) {
+      pie.style.background = "conic-gradient(#8a8d93 0 100%)";
+    } else {
+      const compliantEnd = (compliant / total) * 100;
+      const violationEnd = ((compliant + violation) / total) * 100;
+      pie.style.background = `conic-gradient(#2ecc40 0 ${compliantEnd}%, #e5484d ${compliantEnd}% ${violationEnd}%, #8a8d93 ${violationEnd}% 100%)`;
+    }
+
+    const entries = [
+      { label: "Compliant", count: compliant, className: "yes", symbol: "✓" },
+      { label: "Violation", count: violation, className: "no", symbol: "✕" },
+      { label: "Unmonitored", count: unmonitored, className: "na", symbol: "?" },
+    ];
+
+    legend.innerHTML = entries.map((entry) => {
+      const percentage = total ? ((entry.count / total) * 100).toFixed(1) : "0.0";
+      return `<div class="lg"><i class="status-dot ${entry.className}">${entry.symbol}</i><span>${entry.label}</span><b>${entry.count} (${percentage}%)</b></div>`;
+    }).join("");
+  };
+
+  const frameUrlCache = new Map();
+  let latestPPERequestId = 0;
+  let currentPpeSiteId = pageUrl.searchParams.get("site_id") || sessionStorage.getItem("smsys_site_id") || "";
+
+  const renderPPEFrames = (frames, requestId) => {
+    const container = $("frames");
+    if (!container) return;
+
+    const usableFrames = Array.isArray(frames) ? frames : [];
+    const activeLocalFrameIds = new Set(
+      usableFrames.filter((frame) => !frame.frame_url).map((frame) => String(frame.id))
+    );
+
+    for (const [frameId, objectUrl] of frameUrlCache.entries()) {
+      if (!activeLocalFrameIds.has(frameId)) {
+        URL.revokeObjectURL(objectUrl);
+        frameUrlCache.delete(frameId);
+      }
+    }
+
+    if (usableFrames.length === 0) {
+      container.innerHTML = '<div class="frame"><div class="frame-img frame-placeholder">No detection frames available.</div><figcaption>Waiting for monitoring data</figcaption></div>';
+      return;
+    }
+
+    container.innerHTML = usableFrames.map((frame) => `
+      <figure class="frame" data-frame-id="${escapePPE(frame.id)}">
+        <div class="frame-img frame-placeholder">Loading frame...</div>
+        <figcaption title="${escapePPE(`${frame.device_id || "Device"} · ${frame.worker_name || "Unassigned"}`)}">${escapePPE(frame.device_id || "Device")} · ${escapePPE(frame.worker_name || "Unassigned")}</figcaption>
+      </figure>
+    `).join("");
+
+    usableFrames.forEach(async (frame) => {
+      const frameId = String(frame.id);
+      let imageUrl = frame.frame_url || "";
+
+      try {
+        if (!imageUrl) {
+          imageUrl = frameUrlCache.get(frameId) || "";
+          if (!imageUrl) {
+            const endpoint = new URL(`${API_BASE}/api/dashboard/ppe-frames/${encodeURIComponent(frameId)}`);
+            const response = await fetch(endpoint.toString(), { headers: getAuthHeaders() });
+            if (response.status === 401) {
+              redirectToSiteAccess();
+              return;
+            }
+            if (!response.ok) throw new Error(`Frame request failed (${response.status})`);
+            imageUrl = URL.createObjectURL(await response.blob());
+            frameUrlCache.set(frameId, imageUrl);
+          }
+        }
+
+        if (requestId !== latestPPERequestId) return;
+        const figure = Array.from(container.querySelectorAll("[data-frame-id]")).find(
+          (element) => element.dataset.frameId === frameId
+        );
+        if (!figure) return;
+
+        const image = document.createElement("img");
+        image.className = "frame-img";
+        image.alt = `PPE detection frame for ${frame.device_id || "device"}`;
+        image.src = imageUrl;
+        image.onerror = () => {
+          if (requestId !== latestPPERequestId) return;
+          const placeholder = document.createElement("div");
+          placeholder.className = "frame-img frame-placeholder";
+          placeholder.textContent = "Frame unavailable";
+          image.replaceWith(placeholder);
+        };
+
+        const caption = document.createElement("figcaption");
+        caption.textContent = `${frame.device_id || "Device"} · ${frame.worker_name || "Unassigned"} · ${formatPPEDateTime(frame.captured_at)}`;
+        caption.title = caption.textContent;
+        figure.replaceChildren(image, caption);
+      } catch (error) {
+        if (requestId !== latestPPERequestId) return;
+        console.warn("Could not load PPE detection frame:", error);
+        const figure = Array.from(container.querySelectorAll("[data-frame-id]")).find(
+          (element) => element.dataset.frameId === frameId
+        );
+        if (figure) {
+          const placeholder = document.createElement("div");
+          placeholder.className = "frame-img frame-placeholder";
+          placeholder.textContent = "Frame unavailable";
+          figure.replaceChildren(placeholder, figure.querySelector("figcaption") || document.createElement("figcaption"));
+        }
+      }
+    });
+  };
+
+  const formatPPEPercent = (value) => {
+    if (value == null || Number.isNaN(Number(value))) return "—";
+    return `${Number(value).toFixed(1).replace(/\.0$/, "")}%`;
+  };
+
+  const renderPPEStatus = (data, requestId) => {
+    const summary = data.summary || {};
+    setPPEText("pCompliant", formatPPEPercent(summary.compliant_percent));
+    setPPEText("pViolation", formatPPEPercent(summary.violation_percent));
+    setPPEText("pUnmon", formatPPEPercent(summary.unmonitored_percent));
+    renderPPETable(data.records || []);
+    renderPPEBreakdown(summary);
+    renderPPEFrames(data.frames || [], requestId);
+  };
+
+  async function loadPPEStatus() {
+    if (!sessionStorage.getItem("smsys_access_token")) {
+      redirectToSiteAccess();
+      return;
+    }
+
+    const requestId = ++latestPPERequestId;
+    const selectedSiteId = currentPpeSiteId || sessionStorage.getItem("smsys_site_id") || "";
+    const endpoint = new URL(`${API_BASE}/api/dashboard/ppe-status`);
+    if (selectedSiteId) endpoint.searchParams.set("site_id", selectedSiteId);
+
+    try {
+      const response = await fetch(endpoint.toString(), { headers: getAuthHeaders() });
+      const data = await response.json();
+
+      if (response.status === 401) {
+        redirectToSiteAccess();
+        return;
+      }
+      if (!response.ok || !data.success) {
+        const error = new Error(data.message || "Could not load PPE status.");
+        error.status = response.status;
+        throw error;
+      }
+      if (requestId !== latestPPERequestId) return;
+
+      if (data.site && data.site.id != null) {
+        currentPpeSiteId = String(data.site.id);
+        sessionStorage.setItem("smsys_site_id", currentPpeSiteId);
+      }
+      renderPPEStatus(data, requestId);
+    } catch (error) {
+      if (requestId !== latestPPERequestId) return;
+      console.error("SMSYS PPE status API error:", error);
+      setPPEText("pCompliant", "—");
+      setPPEText("pViolation", "—");
+      setPPEText("pUnmon", "—");
+      const table = $("ppeTable");
+      if (table) {
+        const message = error.status === 403
+          ? "You do not have permission to access this site."
+          : "Unable to load PPE status. Check that Flask is running.";
+        table.textContent = message;
+      }
+      const frames = $("frames");
+      if (frames) frames.innerHTML = '<div class="frame"><div class="frame-img frame-placeholder">PPE frames unavailable.</div><figcaption>Check the backend connection</figcaption></div>';
+      const pie = $("pie");
+      const legend = $("legend");
+      if (pie) pie.style.background = "conic-gradient(#8a8d93 0 100%)";
+      if (legend) legend.innerHTML = '<div class="lg"><i class="status-dot na">?</i><span>No data</span><b>—</b></div>';
+    }
+  }
+
+  window.addEventListener("smsys:site-change", (event) => {
+    currentPpeSiteId = String(event.detail?.siteId || "");
+    loadPPEStatus();
+  });
+
+  loadPPEStatus();
+  window.setInterval(loadPPEStatus, 5000);
+}
+
+/* ---------- 5. Sample data + renderers (other tab pages only) ---------- */
+if (app && document.body.dataset.active !== "ppe") {
   const set = (id, v) => { const e = $(id); if (e) e.innerHTML = v; };
   const pill = (c, t) => `<span class="pill ${c}">${t}</span>`;
   const dot = (v) => `<i class="status-dot ${["no", "yes", "na"][v]}">${["✕", "✓", "?"][v]}</i>`; // 0 missing, 1 ok, 2 unknown
