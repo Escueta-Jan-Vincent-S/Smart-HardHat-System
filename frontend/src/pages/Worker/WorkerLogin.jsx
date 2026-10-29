@@ -1,5 +1,6 @@
 import { useState } from "react";
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import "../Site/Site.css";
 import "./WorkerLogin.css";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000";
@@ -28,31 +29,6 @@ function HardhatIcon({ className = "" }) {
         strokeLinejoin="round"
       />
       <path d="M11 45h42" stroke="#6D4200" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function UserIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M4.5 20c.5-4 3.3-6 7.5-6s7 2 7.5 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function SiteCodeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="12" cy="15" r="1.2" fill="currentColor" />
-      <path d="M12 16.2v1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -235,34 +211,31 @@ function WorkerLogin() {
 
   return (
     <main
-      className="worker-page"
-      style={{ "--worker-background": `url("${bgImage}")` }}
+      className="site-page worker-site-page"
+      style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="worker-page__content">
-        <header className="worker-brand">
-          <HardhatIcon className="worker-brand__logo" />
-          <div className="worker-brand__text">
-            <h1 className="worker-brand__name">SMSYS</h1>
-            <p className="worker-brand__tagline">SMART MONITORING SYSTEM</p>
+      <div className="site-panel worker-site-panel">
+        <header className="site-header">
+          <span className="site-logo" aria-hidden="true">
+            ⛑️
+          </span>
+          <div className="site-brand">
+            <h2>SMSYS</h2>
+            <p>SMART MONITORING SYSTEM</p>
           </div>
         </header>
 
-        <div className="worker-page-title">
-          <h2>Worker Page</h2>
+        <div className="site-title">
+          <h1>Worker Page</h1>
           <p>Please enter your name and select an available Smart Hardhat.</p>
         </div>
 
-        <form className="worker-login-card" onSubmit={handleSubmit}>
+        <form className="site-card worker-login-card" onSubmit={handleSubmit}>
           <div className="worker-field">
-            <label className="worker-field__label" htmlFor="worker-full-name">
-              Full Name
-            </label>
-            <div className="worker-field__box">
-              <span className="worker-field__icon" aria-hidden="true">
-                <UserIcon />
-              </span>
+            <label htmlFor="worker-full-name">Full Name</label>
+            <div className="site-input">
+              <span aria-hidden="true">👤</span>
               <input
-                className="worker-field__input"
                 id="worker-full-name"
                 type="text"
                 placeholder="Enter your full name"
@@ -287,15 +260,10 @@ function WorkerLogin() {
           </div>
 
           <div className="worker-field">
-            <label className="worker-field__label" htmlFor="worker-site-code">
-              Site Code
-            </label>
-            <div className="worker-field__box">
-              <span className="worker-field__icon" aria-hidden="true">
-                <SiteCodeIcon />
-              </span>
+            <label htmlFor="worker-site-code">Site Code</label>
+            <div className="site-input">
+              <span aria-hidden="true">🔒</span>
               <input
-                className="worker-field__input"
                 id="worker-site-code"
                 type="text"
                 placeholder="Enter site code"
@@ -323,9 +291,7 @@ function WorkerLogin() {
                 onClick={() => setPickerOpen((open) => !open)}
               >
                 <HardhatIcon className="worker-picker__icon" />
-                <span>
-                  {selectedHardhat || "Choose a hardhat"}
-                </span>
+                <span>{selectedHardhat || "Choose a hardhat"}</span>
                 <ChevronIcon isOpen={pickerOpen} />
               </button>
 
@@ -409,7 +375,11 @@ function WorkerLogin() {
             </div>
           )}
 
-          <button className="worker-btn worker-btn--primary" type="submit" disabled={isSubmitting || isLoadingHardhats}>
+          <button
+            className="verify-btn worker-confirm-btn"
+            type="submit"
+            disabled={isSubmitting || isLoadingHardhats}
+          >
             <CheckIcon />
             {isSubmitting ? "CONFIRMING..." : "CONFIRM"}
           </button>

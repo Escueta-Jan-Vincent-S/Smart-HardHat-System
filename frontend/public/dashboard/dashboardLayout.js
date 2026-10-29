@@ -67,7 +67,7 @@ if (app) {
   const active = document.body.dataset.active;
   const NAV = [
     ["dashboard", "Dashboard", "../dashboard.html", "M3 3h8v10H3zm10 0h8v6h-8zM3 15h8v6H3zm10-4h8v10h-8z"],
-    ["ppe", "PPE Status", "ppeStatus.html", "M4 6h3l1.5-2h7L17 6h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"],
+    ["ppe", "PPE Status", "PpeStatus.html", "M4 6h3l1.5-2h7L17 6h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"],
     ["drowsy", "Drowsiness Status", "drowsinessStatus.html", "M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"],
     ["devices", "Device Connectivity", "deviceConnectivity.html", "M3 4h14v10H3zm4 12h6v2H7zM19 8h2v10h-2z"],
     ["history", "Alerts History", "alertsHistory.html", "M6 2h9l5 5v15H6zm2 10h9v2H8zm0 4h9v2H8z"],
@@ -98,7 +98,7 @@ if (app) {
     </header>
     <div class="modal" id="logout"><a class="modal-backdrop" href="#" aria-label="Close"></a>
       <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="logout-title"><h2 id="logout-title">LOG OUT</h2><p>Are you sure you want to log out?</p>
-        <div class="modal-actions"><a class="btn btn-primary" href="/site-access" target="_top">YES, LOG OUT</a><a class="btn btn-outline" href="#">CANCEL</a></div></div></div>`);
+        <div class="modal-actions"><a class="btn btn-primary" href="/dashboard-login" target="_top">YES, LOG OUT</a><a class="btn btn-outline" href="#">CANCEL</a></div></div></div>`);
 }
 
 updateSupervisorName();
@@ -119,8 +119,8 @@ document.querySelectorAll(".modal .btn-primary").forEach((logoutLink) => {
       }
     }
     clearRememberedSupervisorSession();
-    if (window.top) window.top.location.href = "/site-access";
-    else window.location.href = "/site-access";
+    if (window.top) window.top.location.href = "/dashboard-login";
+    else window.location.href = "/dashboard-login";
   });
 });
 
