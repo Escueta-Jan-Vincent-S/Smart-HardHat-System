@@ -1,0 +1,507 @@
+/* =========================
+   CREATE SITE PAGE
+========================= */
+
+.create-site-page {
+  width: 100%;
+  min-height: 100vh;
+
+  background-color: #05070a;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  font-family: "Poppins", sans-serif;
+}
+
+
+/* =========================
+   BACKGROUND OVERLAY
+========================= */
+
+.create-site-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: rgba(2, 8, 20, 0.5);
+
+  z-index: 0;
+}
+
+
+/* =========================
+   MAIN PANEL
+========================= */
+
+.create-site-panel {
+  width: 100%;
+  max-width: 1100px;
+
+  min-height: min(760px, 88vh);
+
+  padding: clamp(28px, 4vw, 48px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  position: relative;
+  z-index: 1;
+
+  border-radius: 16px;
+
+  background-color: rgba(7, 18, 42, 0.58);
+
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  backdrop-filter: blur(2px);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.cs-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+}
+
+
+.cs-logo {
+  font-size: clamp(54px, 6vw, 72px);
+
+  line-height: 1;
+}
+
+
+.cs-brand {
+  text-align: left;
+}
+
+
+.cs-brand h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(30px, 4vw, 42px);
+
+  font-weight: 800;
+
+  letter-spacing: 0.02em;
+}
+
+
+.cs-brand p {
+  margin: 4px 0 0;
+
+  color: #c7d0e0;
+
+  font-size: clamp(13px, 1.6vw, 17px);
+
+  font-weight: 400;
+
+  letter-spacing: 0.04em;
+}
+
+
+/* =========================
+   TITLE
+========================= */
+
+.cs-title {
+  margin-top: clamp(26px, 4vw, 42px);
+
+  text-align: center;
+}
+
+
+.cs-title h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(25px, 3vw, 32px);
+
+  font-weight: 700;
+}
+
+
+.cs-title p {
+  margin: 8px 0 0;
+
+  color: #c7d0e0;
+
+  font-size: clamp(13px, 1.6vw, 15px);
+
+  font-weight: 400;
+}
+
+
+/* =========================
+   FORM CARD
+========================= */
+
+.cs-card {
+  width: 100%;
+  max-width: 520px;
+
+  margin-top: clamp(20px, 3vw, 28px);
+
+  padding: 26px;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: rgba(5, 25, 58, 0.92);
+
+  border: 2px solid rgba(112, 139, 177, 0.7);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================
+   LABELS
+========================= */
+
+.cs-label {
+  margin-bottom: 8px;
+
+  color: #d6dceb;
+
+  font-size: 14px;
+
+  font-weight: 500;
+}
+
+
+.cs-label:not(:first-child) {
+  margin-top: 18px;
+}
+
+
+/* =========================
+   INPUTS
+========================= */
+
+.cs-input {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px 16px;
+
+  background-color: rgba(2, 17, 39, 0.85);
+
+  border: 2px solid rgba(112, 139, 177, 0.65);
+
+  border-radius: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.cs-input:focus-within {
+  border-color: #f5a623;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+
+.cs-input span {
+  flex-shrink: 0;
+
+  font-size: 17px;
+
+  opacity: 0.75;
+}
+
+
+.cs-input input {
+  width: 100%;
+
+  background: transparent;
+
+  border: none;
+
+  outline: none;
+
+  color: #ffffff;
+
+  font-family: "Poppins", sans-serif;
+
+  font-size: 14px;
+}
+
+
+.cs-input input::placeholder {
+  color: #7f899d;
+}
+
+
+/* =========================
+   CONFIRM BUTTON
+========================= */
+
+.cs-confirm-btn {
+  width: 100%;
+
+  margin-top: 20px;
+
+  padding: 13px 18px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background-color: #ffb11f;
+
+  color: #0d1220;
+
+  font-family: "Poppins", sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.03em;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.25);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+
+.cs-confirm-btn:hover {
+  background-color: #ffc13d;
+}
+
+
+.cs-confirm-btn:active {
+  transform: translateY(3px);
+
+  box-shadow: none;
+}
+
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.cs-back-btn {
+  width: 100%;
+
+  margin-top: 14px;
+
+  padding: 13px 18px;
+
+  border: 2px solid #f5a623;
+
+  border-radius: 12px;
+
+  background-color: transparent;
+
+  color: #c7d0e0;
+
+  font-family: "Poppins", sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.03em;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+
+.cs-back-btn:hover {
+  background-color: rgba(245, 166, 35, 0.1);
+
+  color: #f5a623;
+}
+
+
+.cs-back-btn:active {
+  transform: translateY(2px);
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 768px) {
+
+  .create-site-page {
+    padding: 18px;
+  }
+
+
+  .create-site-panel {
+    min-height: auto;
+
+    padding: 32px 24px;
+  }
+
+
+  .cs-card {
+    max-width: 500px;
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 560px) {
+
+  .create-site-page {
+    align-items: flex-start;
+
+    padding: 14px;
+
+    overflow-y: auto;
+  }
+
+
+  .create-site-panel {
+    min-height: calc(100vh - 28px);
+
+    padding: 28px 16px;
+
+    border-radius: 12px;
+  }
+
+
+  .cs-header {
+    gap: 12px;
+  }
+
+
+  .cs-logo {
+    font-size: 48px;
+  }
+
+
+  .cs-brand h2 {
+    font-size: 27px;
+  }
+
+
+  .cs-brand p {
+    font-size: 11px;
+  }
+
+
+  .cs-title {
+    margin-top: 30px;
+  }
+
+
+  .cs-title h1 {
+    font-size: 23px;
+  }
+
+
+  .cs-title p {
+    font-size: 13px;
+
+    line-height: 1.5;
+  }
+
+
+  .cs-card {
+    margin-top: 20px;
+
+    padding: 20px 16px;
+
+    border-radius: 14px;
+  }
+
+
+  .cs-input {
+    padding: 12px 13px;
+  }
+
+
+  .cs-input input {
+    font-size: 13px;
+  }
+
+
+  .cs-confirm-btn,
+  .cs-back-btn {
+    padding: 12px;
+
+    font-size: 13px;
+  }
+
+}
+
+
+/* =========================
+   VERY SMALL PHONE
+========================= */
+
+@media (max-width: 380px) {
+
+  .cs-header {
+    flex-direction: column;
+
+    text-align: center;
+  }
+
+
+  .cs-brand {
+    text-align: center;
+  }
+
+
+  .cs-logo {
+    font-size: 44px;
+  }
+
+
+  .cs-title h1 {
+    font-size: 21px;
+  }
+
+}

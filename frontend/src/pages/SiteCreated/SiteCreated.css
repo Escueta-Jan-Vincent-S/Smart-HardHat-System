@@ -1,0 +1,611 @@
+/* =========================
+   SITE CREATED PAGE
+========================= */
+
+.site-created-page {
+  width: 100%;
+  min-height: 100vh;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  overflow-y: auto;
+
+  background-color: #05070a;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  font-family: "Poppins", sans-serif;
+}
+
+
+/* =========================
+   BACKGROUND OVERLAY
+========================= */
+
+.site-created-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      rgba(2, 10, 27, 0.58),
+      rgba(1, 8, 20, 0.68)
+    );
+
+  z-index: 0;
+}
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.site-created-container {
+  width: 100%;
+  max-width: 1100px;
+
+  min-height: min(760px, 88vh);
+
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding:
+    clamp(35px, 5vw, 60px)
+    clamp(24px, 5vw, 60px);
+
+  border-radius: 16px;
+
+  background:
+    rgba(6, 18, 43, 0.62);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.04);
+
+  backdrop-filter: blur(2px);
+
+  box-shadow:
+    0 18px 50px
+    rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.sc-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+}
+
+
+.sc-logo {
+  width: 74px;
+  height: 74px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 58px;
+
+  line-height: 1;
+}
+
+
+.sc-brand {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  text-align: left;
+}
+
+
+.sc-brand h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(30px, 4vw, 42px);
+
+  font-weight: 800;
+
+  letter-spacing: 0.01em;
+
+  line-height: 1.1;
+}
+
+
+.sc-brand p {
+  margin: 8px 0 0;
+
+  color: #c7d0e0;
+
+  font-size:
+    clamp(12px, 1.5vw, 16px);
+
+  font-weight: 400;
+
+  letter-spacing: 0.02em;
+}
+
+
+/* =========================
+   SUCCESS CARD
+========================= */
+
+.sc-card {
+  width: 100%;
+  max-width: 530px;
+
+  margin-top:
+    clamp(45px, 6vh, 70px);
+
+  padding: 24px 26px 22px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border-radius: 15px;
+
+  border:
+    2px solid
+    rgba(103, 133, 170, 0.72);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(4, 23, 53, 0.97),
+      rgba(3, 18, 43, 0.97)
+    );
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.28);
+}
+
+
+/* =========================
+   SUCCESS ICON
+========================= */
+
+.sc-success-icon {
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 16px;
+
+  border-radius: 50%;
+
+  background: #11df1f;
+
+  color: #05220a;
+
+  font-size: 21px;
+
+  font-weight: 900;
+}
+
+
+/* =========================
+   SUCCESS TITLE
+========================= */
+
+.sc-success-title {
+  margin: 0;
+
+  color: #00ef24;
+
+  font-size:
+    clamp(16px, 2vw, 19px);
+
+  font-weight: 500;
+
+  text-align: center;
+}
+
+
+/* =========================
+   INFORMATION TITLE
+========================= */
+
+.sc-information-title {
+  margin:
+    24px 0
+    19px;
+
+  color: #d9dfeb;
+
+  font-size: 14px;
+
+  font-weight: 400;
+
+  text-align: center;
+}
+
+
+/* =========================
+   INFORMATION AREA
+========================= */
+
+.sc-information {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+/* =========================
+   INFORMATION ROW
+========================= */
+
+.sc-row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(150px, 1fr)
+    minmax(210px, 1.25fr);
+
+  align-items: center;
+
+  gap: 20px;
+}
+
+
+/* =========================
+   LABEL
+========================= */
+
+.sc-label {
+  color: #d5dcea;
+
+  font-size: 14px;
+
+  font-weight: 400;
+
+  text-align: left;
+}
+
+
+/* =========================
+   VALUE BOX
+========================= */
+
+.sc-value {
+  width: 100%;
+
+  min-height: 41px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 9px 13px;
+
+  border:
+    2px solid
+    rgba(105, 135, 171, 0.7);
+
+  border-radius: 12px;
+
+  background:
+    rgba(2, 17, 39, 0.86);
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 400;
+
+  text-align: left;
+
+  word-break: break-word;
+}
+
+
+/* =========================
+   CONFIRM BUTTON
+========================= */
+
+.sc-confirm-btn {
+  width: 100%;
+
+  min-height: 43px;
+
+  margin-top: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  background:
+    #ffb11f;
+
+  color: #090d16;
+
+  font-family:
+    "Poppins",
+    sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 0
+    rgba(0, 0, 0, 0.22);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+
+.sc-confirm-btn span {
+  font-size: 18px;
+
+  font-weight: 900;
+}
+
+
+.sc-confirm-btn:hover {
+  background:
+    #ffc13d;
+}
+
+
+.sc-confirm-btn:active {
+  transform:
+    translateY(3px);
+
+  box-shadow: none;
+}
+
+
+/* =========================
+   MISSING DATA PAGE
+========================= */
+
+.site-created-missing {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    #05070a;
+
+  font-family:
+    "Poppins",
+    sans-serif;
+}
+
+
+.site-created-missing-card {
+  width: 100%;
+  max-width: 460px;
+
+  padding: 30px;
+
+  text-align: center;
+
+  border-radius: 16px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  background:
+    #07172f;
+}
+
+
+.site-created-missing-card h2 {
+  margin:
+    0 0 10px;
+
+  color:
+    #ffffff;
+}
+
+
+.site-created-missing-card p {
+  margin:
+    0 0 22px;
+
+  color:
+    #aeb8ca;
+
+  font-size:
+    14px;
+}
+
+
+.site-created-missing-card button {
+  width: 100%;
+
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background:
+    #ffb11f;
+
+  color:
+    #0d1220;
+
+  font-family:
+    "Poppins",
+    sans-serif;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 768px) {
+
+  .site-created-page {
+    padding: 18px;
+  }
+
+
+  .site-created-container {
+    min-height: auto;
+
+    padding:
+      35px 25px;
+  }
+
+
+  .sc-card {
+    margin-top: 45px;
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  .site-created-page {
+    align-items: flex-start;
+
+    padding: 14px;
+  }
+
+
+  .site-created-container {
+    min-height:
+      calc(100vh - 28px);
+
+    padding:
+      28px 16px;
+
+    border-radius: 12px;
+  }
+
+
+  .sc-header {
+    gap: 12px;
+  }
+
+
+  .sc-logo {
+    width: 55px;
+    height: 55px;
+
+    font-size: 45px;
+  }
+
+
+  .sc-brand h1 {
+    font-size: 27px;
+  }
+
+
+  .sc-brand p {
+    margin-top: 4px;
+
+    font-size: 11px;
+  }
+
+
+  .sc-card {
+    margin-top: 32px;
+
+    padding:
+      22px 16px;
+  }
+
+
+  .sc-row {
+    grid-template-columns: 1fr;
+
+    gap: 5px;
+
+    margin-bottom: 7px;
+  }
+
+
+  .sc-value {
+    min-height: 40px;
+  }
+
+}
+
+
+/* =========================
+   VERY SMALL PHONE
+========================= */
+
+@media (max-width: 380px) {
+
+  .sc-header {
+    flex-direction: column;
+  }
+
+
+  .sc-brand {
+    text-align: center;
+  }
+
+
+  .sc-success-title {
+    font-size: 15px;
+  }
+
+}

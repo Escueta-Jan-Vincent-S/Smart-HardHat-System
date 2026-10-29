@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMSYS - Dashboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="page">
+
+    <!-- ===== Sidebar navigation ===== -->
+    <nav class="nav" data-active="dashboard">
+      <div class="nav-head">
+        <img src="../assets/icons/1.hardhat_logo.png" alt="">
+        <div>
+          <strong>SMSYS</strong>
+          <small>SMART MONITORING SYSTEM</small>
+        </div>
+      </div>
+      <div class="nav-body"></div>
+      <div class="nav-rail"></div>
+      <div class="nav-notch"></div>
+
+      <ul class="nav-list">
+        <li>
+          <a class="nav-item active" href="dashboard.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v10H3zm10 0h8v6h-8zM3 15h8v6H3zm10-4h8v10h-8z"/></svg>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" href="dashboardTabs/ppeStatus.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h3l1.5-2h7L17 6h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+            PPE Status
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" href="dashboardTabs/drowsinessStatus.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>
+            Drowsiness Status
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" href="dashboardTabs/deviceConnectivity.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h14v10H3zm4 12h6v2H7zM19 8h2v10h-2z"/></svg>
+            Device Connectivity
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" href="dashboardTabs/alertsHistory.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6zm2 10h9v2H8zm0 4h9v2H8z"/></svg>
+            Alerts History
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" href="dashboardTabs/zoneLocalization.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+            Zone Localization
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" href="dashboardTabs/analytics.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18v2H3zM5 11h3v8H5zm5-4h3v12h-3zm5-4h3v16h-3z"/></svg>
+            Analytics
+          </a>
+        </li>
+        <li class="nav-item-logout">
+          <a class="nav-item" href="#logout">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h9v4h-2V5H7v14h5v-2h2v4H5zm11 5l5 4-5 4v-3h-5v-2h5z"/></svg>
+            Logout
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ===== Top bar ===== -->
+    <header class="topbar">
+      <div class="topbar-item topbar-site">
+        <details class="dropdown">
+          <summary class="site-toggle">
+            <small>SITE</small>
+            <span class="value" id="siteNameValue">Loading site...</span>
+            <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="#ffbc2d" stroke-width="1.8"/></svg>
+          </summary>
+          <ul class="dropdown-menu" id="siteOptions"><li><a href="#">Loading sites...</a></li></ul>
+        </details>
+      </div>
+
+      <div class="topbar-item topbar-datetime">
+        <small>DATE &amp; TIME</small>
+        <div class="datetime">
+          <span class="value" id="date"></span>
+          <span class="divider"></span>
+          <span class="value" id="time"></span>
+        </div>
+      </div>
+
+      <div class="topbar-item topbar-notifications">
+        <details class="dropdown">
+          <summary class="bell-toggle" aria-label="Notifications">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="#feaf1c" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg>
+            <span class="badge" id="notificationBadge">0</span>
+          </summary>
+          <div class="dropdown-menu notifications-menu">
+            <h4>Notifications</h4>
+            <ul id="notificationList"><li>No alerts recorded yet.</li></ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="topbar-item topbar-account">
+        <svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true">
+          <circle cx="25" cy="25" r="23" fill="#d0d0d0"/>
+          <circle cx="25" cy="19" r="8" fill="#0b1735"/>
+          <path d="M9 40c3-9 9-12 16-12s13 3 16 12a23 23 0 0 1-32 0z" fill="#0b1735"/>
+        </svg>
+        <span id="supervisorNameValue">Supervisor</span>
+      </div>
+    </header>
+
+    <!-- ===== Logout confirmation (opened by the #logout link) ===== -->
+    <div class="modal" id="logout">
+      <a class="modal-backdrop" href="#" aria-label="Close"></a>
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+        <h2 id="logout-title">LOG OUT</h2>
+        <p>Are you sure you want to log out?</p>
+        <div class="modal-actions">
+          <a class="btn btn-primary" href="/site-access" target="_top">YES, LOG OUT</a>
+          <a class="btn btn-outline" href="#">CANCEL</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Page content ===== -->
+    <main>
+      <h1 class="page-title">Dashboard Overview</h1>
+
+      <div class="dashboard">
+
+        <!-- Summary cards -->
+        <section class="stats">
+          <article class="card stat card-green">
+            <h3>Active Devices</h3>
+            <div class="stat-value" id="activeDevicesValue">—</div>
+            <p class="stat-label">Online</p>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm4 12h6v2h2v1H5v-1h2zM19 8h2a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/></svg>
+          </article>
+
+          <article class="card stat card-blue">
+            <h3>PPE Compliance</h3>
+            <div class="stat-value" id="ppeComplianceValue">—</div>
+            <p class="stat-label">Compliant</p>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/></svg>
+          </article>
+
+          <article class="card stat card-orange">
+            <h3>Drowsiness Alerts</h3>
+            <div class="stat-value" id="drowsinessAlertsValue">—</div>
+            <p class="stat-label">Active</p>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg>
+          </article>
+
+          <article class="card stat card-red">
+            <h3>PPE Violations</h3>
+            <div class="stat-value" id="ppeViolationsValue">—</div>
+            <p class="stat-label">Today</p>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6zM8 12h9v2H8zm0 4h9v2H8z"/></svg>
+          </article>
+        </section>
+
+        <!-- Main panels -->
+        <section class="panels">
+
+          <article class="card card-panel">
+            <h3>PPE Image Frames</h3>
+            <div class="camera">
+              <!-- <img src="path/to/frame.jpg" alt="Latest PPE detection frame"> -->
+              <p class="camera-caption top" id="cameraTopCaption">No monitoring frame received yet.</p>
+              <p class="camera-caption bottom" id="cameraBottomCaption"><span class="warn">●</span> Status: Waiting for data</p>
+            </div>
+          </article>
+
+          <article class="card card-panel">
+            <h3>Recent Alerts (PPE Monitoring)</h3>
+            <div class="alert-list" id="recentAlerts">
+              <div class="alert"><div class="alert-text">Loading dashboard data...</div></div>
+            </div>
+          </article>
+
+          <article class="card card-panel">
+            <h3>Device Connectivity</h3>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Device ID</th><th>Status</th></tr>
+                </thead>
+                <tbody id="deviceConnectivityBody"><tr><td colspan="2">No device records yet.</td></tr></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card card-panel">
+            <h3>PPE Compliance Status</h3>
+            <ul class="ppe-list" id="ppeComplianceList">
+              <li><span class="name">Hardhat</span><span id="ppeHardhatCount">—</span><i class="status-dot na" id="ppeHardhatIndicator">?</i></li>
+              <li><span class="name">Safety Vest</span><span id="ppeVestCount">—</span><i class="status-dot na" id="ppeVestIndicator">?</i></li>
+              <li><span class="name">Gloves</span><span id="ppeGlovesCount">—</span><i class="status-dot na" id="ppeGlovesIndicator">?</i></li>
+              <li><span class="name">Safety Boots</span><span id="ppeBootsCount">—</span><i class="status-dot na" id="ppeBootsIndicator">?</i></li>
+            </ul>
+          </article>
+
+          <article class="card card-panel">
+            <h3>Drowsiness Status</h3>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Device ID</th><th>Status</th><th>Time</th></tr>
+                </thead>
+                <tbody id="drowsinessStatusBody"><tr><td colspan="3">No monitoring records yet.</td></tr></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card card-panel">
+            <h3>Zone Localization</h3>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Device ID</th><th>Status</th></tr>
+                </thead>
+                <tbody id="zoneLocalizationBody"><tr><td colspan="2">No localization records yet.</td></tr></tbody>
+              </table>
+            </div>
+          </article>
+
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="dashboardLayout.js"></script>
+</body>
+</html>

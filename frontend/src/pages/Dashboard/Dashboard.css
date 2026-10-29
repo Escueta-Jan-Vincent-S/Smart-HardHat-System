@@ -1,0 +1,709 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/* ==========================================================================
+   SMSYS Dashboard
+   React/Vite version of the supplied dashboard design.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Variables and base
+   -------------------------------------------------------------------------- */
+:root {
+  --gold: #feaf1c;
+  --gold-light: #ffbc2d;
+  --text: #d0d0d0;
+  --muted: #b9c4d6;
+  --border: rgba(255, 255, 255, 0.4);
+  --surface: rgba(255, 255, 255, 0.14);
+  --green: #2ecc40;
+  --orange: #f08a24;
+  --red: #e5484d;
+}
+
+.dashboard-root,
+.dashboard-root *,
+.dashboard-root *::before,
+.dashboard-root *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  background:
+    linear-gradient(rgba(1, 9, 23, 0.45), rgba(1, 9, 23, 0.45)),
+    url("../../assets/images/landing-page-background.jpg") center bottom / cover no-repeat,
+    #010917;
+}
+
+.dashboard-root a { color: inherit; text-decoration: none; }
+.dashboard-root ul { list-style: none; }
+.dashboard-root svg,
+.dashboard-root img { display: block; }
+
+.dashboard-root a:focus-visible,
+.dashboard-root summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Fixed 1440x1024 canvas, scaled to fit the window (no JavaScript).
+   Needs a browser with CSS trig functions (Chrome 111+, Safari 15.4+, Firefox 108+).
+   -------------------------------------------------------------------------- */
+.page {
+  --scale: min(tan(atan2(100vw, 1440px)), tan(atan2(100vh, 1024px)));
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 1024px;
+  transform-origin: top left;
+  translate: calc((100vw - 1440px * var(--scale)) / 2) calc((100vh - 1024px * var(--scale)) / 2);
+  scale: var(--scale);
+}
+
+/* --------------------------------------------------------------------------
+   3. Sidebar navigation
+   -------------------------------------------------------------------------- */
+.nav {
+  --cut: -100px; /* vertical position of the notch behind the active tab */
+
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 280px;
+  height: 994px;
+}
+
+/* The notch follows the active tab (tab top minus 80px). */
+.nav[data-active="dashboard"] { --cut: 30px; }
+.nav[data-active="ppe"]       { --cut: 98px; }
+.nav[data-active="drowsy"]    { --cut: 166px; }
+.nav[data-active="devices"]   { --cut: 234px; }
+.nav[data-active="history"]   { --cut: 302px; }
+.nav[data-active="zone"]      { --cut: 370px; }
+.nav[data-active="analytics"] { --cut: 438px; }
+
+.nav-head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-left: 18px;
+  background: #080d23;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+}
+
+.nav-head img { width: 45px; height: 45px; }
+.nav-logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 45px;
+  height: 45px;
+  font-size: 34px;
+  line-height: 1;
+}
+.nav-head strong { display: block; font-size: 25px; line-height: 1.1; }
+.nav-head small { font-size: 12px; font-weight: 300; }
+
+/* Body panel with a rounded notch cut out of its right edge using a mask. */
+.nav-body {
+  position: absolute;
+  top: 80px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(180deg, #011636 0%, #01204a 100%);
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 40px 24px;
+
+  -webkit-mask-image: linear-gradient(#000, #000),
+                      radial-gradient(circle 25px at 100% 50%, #000 24.5px, transparent 25px),
+                      linear-gradient(#000, #000);
+  -webkit-mask-size: 100% 100%, 25px 50px, calc(100% - 97px) 50px;
+  -webkit-mask-position: 0 0, 72px var(--cut), 97px var(--cut);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: xor;
+
+  mask-image: linear-gradient(#000, #000),
+              radial-gradient(circle 25px at 100% 50%, #000 24.5px, transparent 25px),
+              linear-gradient(#000, #000);
+  mask-size: 100% 100%, 25px 50px, calc(100% - 97px) 50px;
+  mask-position: 0 0, 72px var(--cut), 97px var(--cut);
+  mask-repeat: no-repeat;
+  mask-composite: exclude;
+}
+
+.nav-notch {
+  position: absolute;
+  top: calc(80px + var(--cut));
+  right: 0;
+  left: 72px;
+  height: 50px;
+  border: 1px solid var(--border);
+  border-right: 0;
+  border-radius: 25px 0 0 25px;
+  pointer-events: none;
+}
+
+.nav-rail {
+  position: absolute;
+  top: 95px;
+  bottom: 0;
+  left: 0;
+  width: 65px;
+  background: #080d23;
+  border: 1px solid var(--border);
+  border-left: 0;
+  border-radius: 20px 0 0 24px;
+}
+
+.nav-list {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 110px;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  font-size: 17px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nav-item svg {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin: 0 40px 0 17px;
+  fill: var(--gold);
+}
+
+.nav-item:hover,
+.nav-item.active { color: #fff; }
+
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 50px;
+  background: #fff;
+  border-radius: 0 3px 3px 0;
+}
+
+.nav-item-logout { margin-top: 20px; }
+.nav-item-logout svg { fill: #b3202a; }
+
+/* --------------------------------------------------------------------------
+   4. Top bar
+   -------------------------------------------------------------------------- */
+.topbar {
+  position: absolute;
+  top: 27px;
+  left: 320px;
+  display: flex;
+  width: 1011px;
+  height: 55px;
+}
+
+.topbar-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 30px;
+  border-left: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.topbar small { font-size: 12px; font-weight: 300; }
+
+.topbar .value {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--gold-light);
+  white-space: nowrap;
+}
+
+.topbar-site          { width: 305px; padding-left: 0; border-left: 0; }
+.topbar-datetime      { width: 399px; padding-left: 60px; }
+.topbar-notifications { width: 92px; align-items: center; padding-left: 0; }
+.topbar-account       { flex: 1; flex-direction: row; align-items: center; gap: 15px; }
+.topbar-account span  { font-size: 15px; font-weight: 300; color: var(--gold-light); }
+
+.datetime { display: flex; align-items: center; gap: 30px; }
+.divider  { width: 2px; height: 20px; background: rgba(255, 255, 255, 0.25); }
+
+/* Dropdowns are <details> elements, so they open without JavaScript. */
+.dropdown {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.dropdown > summary {
+  height: 100%;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dropdown > summary::-webkit-details-marker { display: none; }
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  min-width: 100%;
+  padding: 6px;
+  background: #011636;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px 14px;
+  font-size: 15px;
+  white-space: nowrap;
+  border-radius: 8px;
+}
+
+.dropdown-menu a:hover { background: rgba(254, 175, 28, 0.15); }
+.dropdown-menu a.selected { color: var(--gold); font-weight: 600; }
+
+.site-toggle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 90px 0 32px;
+}
+
+.site-toggle .chevron { position: absolute; top: 32px; right: 92px; }
+.topbar-site .dropdown-menu { left: 32px; min-width: 240px; }
+
+.bell-toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.bell-toggle .badge {
+  position: absolute;
+  top: 8px;
+  right: 28px;
+  min-width: 14px;
+  height: 14px;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 14px;
+  text-align: center;
+  color: #000;
+  background: var(--gold);
+  border-radius: 10px;
+}
+
+.notifications-menu { right: -40px; left: auto; width: 340px; padding: 0; }
+.notifications-menu h4 {
+  padding: 12px 16px;
+  font-size: 15px;
+  color: var(--gold-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.notifications-menu li {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.notifications-menu li:last-child { border-bottom: 0; }
+.notifications-menu small { display: block; margin-top: 2px; color: #808389; }
+
+/* --------------------------------------------------------------------------
+   5. Logout confirmation (opens with the #logout URL fragment, no JavaScript)
+   -------------------------------------------------------------------------- */
+.modal {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal:target { display: flex; }
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 8, 22, 0.7);
+}
+
+.modal-box {
+  position: relative;
+  width: 460px;
+  padding: 32px 33px;
+  text-align: center;
+  background: #011636;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.modal-box h2 { font-size: 25px; font-weight: 400; color: var(--gold-light); }
+.modal-box p  { margin: 14px 0 26px; font-size: 20px; }
+
+.modal-actions { display: flex; flex-direction: column; gap: 10px; }
+
+.btn {
+  display: grid;
+  place-items: center;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.btn-primary { color: #000; background: var(--gold); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-outline { border: 2px solid var(--gold); }
+.btn-outline:hover { background: rgba(254, 175, 28, 0.1); }
+
+/* --------------------------------------------------------------------------
+   6. Dashboard content
+   -------------------------------------------------------------------------- */
+.page-title {
+  position: absolute;
+  top: 102px;
+  left: 325px;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.dashboard {
+  position: absolute;
+  top: 160px;
+  left: 325px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 1095px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  height: 135px;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: 380px 380px 282px;
+  grid-template-rows: 335px 302px;
+  gap: 30px 26px;
+}
+
+/* Cards */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 13px 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.card h3 {
+  height: 36px;
+  padding: 0 11px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.card-green  { background: linear-gradient(0deg, #185016, #256222); }
+.card-blue   { background: linear-gradient(0deg, #103565, #234776); }
+.card-orange { background: linear-gradient(0deg, #a34f0f, #bc6b2e); }
+.card-red    { background: linear-gradient(0deg, #790000, #990607); }
+.card-panel  { background: linear-gradient(0deg, #011636, #002968); }
+
+/* Summary cards */
+.stat { padding: 15px 25px; }
+.stat h3 { height: 24px; padding: 0; line-height: 24px; }
+.stat-value { font-size: 45px; font-weight: 500; line-height: 54px; }
+.stat-label { font-size: 18px; font-weight: 500; line-height: 27px; }
+
+.stat-icon {
+  position: absolute;
+  top: 42px;
+  right: 18px;
+  width: 80px;
+  height: 80px;
+  fill: rgba(255, 255, 255, 0.3);
+}
+
+/* Camera frame */
+.camera {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+.camera img { width: 100%; height: 100%; object-fit: cover; }
+
+.camera-caption {
+  position: absolute;
+  left: 12px;
+  font-size: 12px;
+  font-weight: 300;
+  text-shadow: 0 1px 3px #000;
+}
+.camera-caption.top    { top: 8px; }
+.camera-caption.bottom { bottom: 8px; }
+
+/* Recent alerts */
+.alert-list { display: flex; flex-direction: column; gap: 4px; }
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 90px;
+  padding: 0 10px;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+.alert > svg { flex: none; width: 30px; height: 30px; fill: var(--red); }
+.alert-text { flex: 1; min-width: 0; font-size: 12px; font-weight: 300; line-height: 1.35; }
+.alert-text strong { display: block; font-size: 13px; font-weight: 500; color: var(--red); }
+.alert-meta { font-size: 11px; font-weight: 300; line-height: 1.35; text-align: right; }
+
+.alert-thumb {
+  flex: none;
+  width: 56px;
+  height: 70px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+}
+
+.alert.warning > svg { fill: var(--gold-light); }
+.alert.warning .alert-text strong { color: var(--gold-light); }
+
+/* PPE compliance list */
+.ppe-list { display: flex; flex-direction: column; gap: 18px; padding: 0 4px; }
+
+.ppe-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding: 0 12px 0 58px;
+  font-size: 18px;
+  font-weight: 500;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+.ppe-list .name { flex: 1; }
+
+.status-dot {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 50%;
+}
+
+.status-dot.ok   { background: var(--green); }
+.status-dot.warn { background: var(--orange); }
+.status-dot.bad  { background: var(--red); }
+
+/* Tables */
+.table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.table { width: 100%; border-collapse: collapse; }
+
+.table th,
+.table td {
+  height: 42px;
+  padding: 3px 4px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.table th + th,
+.table td + td { border-left: 1px solid rgba(255, 255, 255, 0.35); }
+
+.table th { font-size: 18px; font-weight: 500; background: rgba(255, 255, 255, 0.12); }
+.table td { font-size: 16px; }
+.table td small { display: block; font-size: 11px; font-weight: 300; color: var(--muted); }
+
+.ok   { color: var(--green); }
+.warn { color: var(--gold-light); }
+.bad  { color: #ff4d4f; }
+
+/* --------------------------------------------------------------------------
+   7. Tab pages (dashboard tabs/*.html)
+   Paste this whole block at the bottom of dashboard.css.
+   -------------------------------------------------------------------------- */
+.dash-title { position: absolute; top: 102px; left: 325px; font-size: 25px; font-weight: 700; }
+
+/* Cards (positioned inline with left/top/width/height) */
+.dcard {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 13px 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.dcard h3 { height: 36px; padding: 0 11px; font-size: 18px; font-weight: 500; line-height: 26px; }
+.g-green { background: linear-gradient(0deg, #185016, #256222); }
+.g-red   { background: linear-gradient(0deg, #790000, #990607); }
+.g-gray  { background: linear-gradient(0deg, #3a3d42, #5a5d63); }
+.g-panel { background: linear-gradient(0deg, #011636, #002968); }
+
+/* Summary cards */
+.dcard.stat { padding: 15px 25px; }
+.dcard.stat h3 { height: 24px; padding: 0; line-height: 24px; }
+.dcard.stat .big { font-size: 45px; font-weight: 500; line-height: 54px; }
+.dcard.stat p { font-size: 18px; font-weight: 500; line-height: 27px; }
+.stat-ico { position: absolute; top: 42px; right: 18px; width: 80px; height: 80px; fill: rgba(255, 255, 255, 0.3); }
+
+/* Date picker */
+.date-wrap { position: absolute; top: 150px; left: 697px; width: 350px; height: 40px; }
+.date-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; height: 100%; padding: 0 18px;
+  font: inherit; font-size: 16px; color: var(--text); cursor: pointer;
+  background: linear-gradient(0deg, #011636, #002968);
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.date-btn svg { width: 20px; height: 20px; fill: var(--gold); }
+.date-wrap input { position: absolute; left: 0; bottom: 0; width: 100%; height: 0; opacity: 0; pointer-events: none; }
+
+/* Tables */
+.tbl { flex: 1; min-height: 0; overflow: auto; background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.table .status-dot { display: inline-grid; width: 18px; height: 18px; font-size: 11px; }
+.status-dot.yes { background: var(--green); color: #fff; }
+.status-dot.no  { background: var(--red); color: #fff; }
+.status-dot.na  { background: #6b6f78; color: #fff; }
+
+.pill {
+  display: inline-block; min-width: 92px; padding: 2px 12px;
+  font-size: 13px; font-weight: 500; text-align: center; color: #fff; border-radius: 6px;
+}
+.pill.n { background: #185016; }
+.pill.d { background: #8a0000; }
+.pill.u { background: #55585e; }
+
+/* Trend charts */
+.trend-legend, .alegend { display: flex; justify-content: flex-end; gap: 12px; padding: 0 10px 6px; }
+.alegend .pill { min-width: 70px; font-size: 11px; padding: 1px 8px; }
+.achart { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.trend, .ascroll {
+  flex: 1; min-height: 0; display: flex; gap: 6px;
+  padding: 10px 12px 4px; font-size: 11px;
+  background: rgba(255, 255, 255, 0.12); border-radius: 10px;
+}
+.ascroll { overflow-x: auto; }
+.ascroll .cols { min-width: 820px; }
+.ylab { display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 22px; }
+.cols { flex: 1; display: flex; }
+.col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+.col > span { height: 22px; line-height: 22px; white-space: nowrap; }
+.bars {
+  flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 3px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px) 0 0 / 100% 33.33%;
+}
+.bar { width: 12px; max-width: 30%; border-radius: 3px 3px 0 0; }
+.bar.n { background: var(--green); }
+.bar.d { background: var(--red); }
+.bar.u { background: #8a8d93; }
+
+/* PPE detection frames */
+.frames { flex: 1; min-height: 0; display: flex; gap: 14px; }
+.frame { flex: 1; display: flex; flex-direction: column; text-align: center; font-size: 14px; }
+.frame-img { flex: 1; margin-bottom: 6px; background: rgba(255, 255, 255, 0.14); border: 1px solid var(--border); border-radius: 10px; }
+.frame img { flex: 1; min-height: 0; width: 100%; object-fit: cover; border-radius: 10px; }
+
+/* Pie + legend */
+.pie-wrap { flex: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; }
+.pie { width: 150px; height: 150px; border-radius: 50%; }
+.abreak .pie { width: 200px; height: 200px; }
+.legend { display: flex; flex-direction: column; gap: 8px; }
+.lg { display: flex; align-items: center; gap: 8px; padding: 5px 10px; font-size: 14px; white-space: nowrap; background: var(--surface); border-radius: 8px; }
+.lg b { margin-left: auto; padding-left: 12px; font-weight: 500; }
+
+/* Alerts history */
+.hist { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.hsec h4 { margin: 0 0 4px 4px; font-size: 15px; font-weight: 500; }
+.htbl { overflow: hidden; background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.htbl .table th, .htbl .table td { height: 30px; font-size: 13px; }
+.hbtn-wrap { display: flex; justify-content: center; }
+.hbtn {
+  width: 260px; height: 32px; margin: 8px 0 4px;
+  font: inherit; font-size: 14px; color: #fff; cursor: pointer;
+  background: linear-gradient(0deg, #011636, #0a3f8f);
+  border: 1px solid var(--border); border-radius: 16px;
+}
+.hbtn:hover { filter: brightness(1.2); }
+
+/* Temporary content shown while the individual dashboard tabs are built. */
+.tab-placeholder {
+  min-height: 210px;
+  gap: 18px;
+  padding: 24px;
+}
+
+.tab-placeholder h3 {
+  height: auto;
+  padding: 0;
+  color: var(--gold-light);
+}
+
+.tab-placeholder p {
+  font-size: 17px;
+  line-height: 1.6;
+}
