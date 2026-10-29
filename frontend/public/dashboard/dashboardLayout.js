@@ -5,6 +5,30 @@
 const $ = (id) => document.getElementById(id);
 const app = $("app"); // only exists on the tab pages
 const pageUrl = new URL(window.location.href);
+const API_HOST = window.location.hostname === "localhost"
+  ? "127.0.0.1"
+  : (window.location.hostname || "127.0.0.1");
+const API_BASE = `${window.location.protocol}//${API_HOST}:5000`;
+
+function getAuthHeaders() {
+  const token = sessionStorage.getItem("smsys_access_token");
+  const headers = { Accept: "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
+
+function clearRememberedSupervisorSession() {
+  sessionStorage.removeItem("smsys_access_token");
+  sessionStorage.removeItem("smsys_supervisor_name");
+  sessionStorage.removeItem("smsys_site_id");
+  sessionStorage.removeItem("smsys_dashboard_background");
+}
+
+function redirectToSiteAccess() {
+  clearRememberedSupervisorSession();
+  if (window.top) window.top.location.href = "/site-access";
+  else window.location.href = "/site-access";
+}
 
 const incomingSupervisorName = pageUrl.searchParams.get("supervisor_name");
 const incomingSiteId = pageUrl.searchParams.get("site_id");
@@ -63,9 +87,9 @@ if (app) {
       </ul>
     </nav>
     <header class="topbar">
-      <div class="topbar-item topbar-site"><details class="dropdown"><summary class="site-toggle"><small>SITE</small><span class="value">Construction Site A</span>
+      <div class="topbar-item topbar-site"><details class="dropdown"><summary class="site-toggle"><small>SITE</small><span class="value" id="siteNameValue">Loading site...</span>
         <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="#ffbc2d" stroke-width="1.8"/></svg></summary>
-        <ul class="dropdown-menu"><li><a class="selected" href="#">Construction Site A</a></li><li><a href="#">Construction Site B</a></li><li><a href="#">Construction Site C</a></li></ul></details></div>
+        <ul class="dropdown-menu" id="siteOptions"><li><a href="#">Loading sites...</a></li></ul></details></div>
       <div class="topbar-item topbar-datetime"><small>DATE &amp; TIME</small><div class="datetime"><span class="value" id="date"></span><span class="divider"></span><span class="value" id="time"></span></div></div>
       <div class="topbar-item topbar-notifications"><details class="dropdown"><summary class="bell-toggle" aria-label="Notifications">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="#feaf1c" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg><span class="badge">2</span></summary>
@@ -79,12 +103,24 @@ if (app) {
 
 updateSupervisorName();
 
-// Clear the remembered login when the supervisor confirms logout.
+// Revoke the server-side bearer token and clear this browser's supervisor session on logout.
 document.querySelectorAll(".modal .btn-primary").forEach((logoutLink) => {
-  logoutLink.addEventListener("click", () => {
-    sessionStorage.removeItem("smsys_supervisor_name");
-    sessionStorage.removeItem("smsys_site_id");
-    sessionStorage.removeItem("smsys_dashboard_background");
+  logoutLink.addEventListener("click", async (event) => {
+    event.preventDefault();
+    const token = sessionStorage.getItem("smsys_access_token");
+    if (token) {
+      try {
+        await fetch(`${API_BASE}/api/auth/logout`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        });
+      } catch (error) {
+        console.warn("Could not contact the backend to revoke the session.", error);
+      }
+    }
+    clearRememberedSupervisorSession();
+    if (window.top) window.top.location.href = "/site-access";
+    else window.location.href = "/site-access";
   });
 });
 
@@ -109,8 +145,6 @@ setInterval(updateClock, 1000);
 
 /* ---------- 3. Dashboard Overview API (main dashboard only) ---------- */
 if (!app) {
-  const API_HOST = window.location.hostname === "localhost" ? "127.0.0.1" : (window.location.hostname || "127.0.0.1");
-  const API_BASE = `${window.location.protocol}//${API_HOST}:5000`;
   let currentSiteId = pageUrl.searchParams.get("site_id") || sessionStorage.getItem("smsys_site_id") || "";
 
   const setText = (id, value) => {
@@ -317,21 +351,33 @@ if (!app) {
     if (currentSiteId) url.searchParams.set("site_id", currentSiteId);
 
     try {
-      const response = await fetch(url.toString(), { headers: { Accept: "application/json" } });
+      const response = await fetch(url.toString(), { headers: getAuthHeaders() });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(data.message || "Could not load dashboard data.");
+        const error = new Error(data.message || "Could not load dashboard data.");
+        error.status = response.status;
+        throw error;
       }
       renderDashboard(data);
     } catch (error) {
+      if (error.status === 401) {
+        redirectToSiteAccess();
+        return;
+      }
+
       console.error("SMSYS dashboard API error:", error);
-      setText("siteNameValue", "Backend unavailable");
+      setText("siteNameValue", error.status === 403 ? "Access denied" : "Backend unavailable");
       setText("activeDevicesValue", "—");
       setText("ppeComplianceValue", "—");
       setText("drowsinessAlertsValue", "—");
       setText("ppeViolationsValue", "—");
       const alerts = $("recentAlerts");
-      if (alerts) alerts.innerHTML = '<div class="alert"><div class="alert-text">Unable to load dashboard data. Check that Flask is running.</div></div>';
+      if (alerts) {
+        const message = error.status === 403
+          ? "You do not have permission to access this site."
+          : "Unable to load dashboard data. Check that Flask is running.";
+        alerts.textContent = message;
+      }
     }
   }
 
@@ -340,7 +386,91 @@ if (!app) {
   window.setInterval(loadDashboardOverview, 5000);
 }
 
-/* ---------- 3. Sample data + renderers (tab pages only) ---------- */
+/* ---------- 3. Authenticated site picker for tab pages ---------- */
+if (app) {
+  const siteNameElement = $("siteNameValue");
+  const siteOptionsElement = $("siteOptions");
+  let currentTabSiteId = pageUrl.searchParams.get("site_id") || sessionStorage.getItem("smsys_site_id") || "";
+
+  async function loadOwnedSitesForTab() {
+    const token = sessionStorage.getItem("smsys_access_token");
+    if (!token) {
+      redirectToSiteAccess();
+      return;
+    }
+
+    const url = new URL(`${API_BASE}/api/sites/mine`);
+    if (currentTabSiteId) url.searchParams.set("site_id", currentTabSiteId);
+
+    try {
+      const response = await fetch(url.toString(), { headers: getAuthHeaders() });
+      const data = await response.json();
+      if (response.status === 401) {
+        redirectToSiteAccess();
+        return;
+      }
+      if (!response.ok || !data.success) {
+        if (siteNameElement) siteNameElement.textContent = response.status === 403 ? "Access denied" : "Unable to load sites";
+        if (siteOptionsElement) siteOptionsElement.textContent = "";
+        return;
+      }
+
+      const sites = data.sites || [];
+      const selectedSite = data.site || sites[0] || null;
+      if (selectedSite) {
+        currentTabSiteId = String(selectedSite.id);
+        sessionStorage.setItem("smsys_site_id", currentTabSiteId);
+        if (siteNameElement) siteNameElement.textContent = selectedSite.site_name;
+      } else if (siteNameElement) {
+        siteNameElement.textContent = "No site created";
+      }
+
+      if (!siteOptionsElement) return;
+      siteOptionsElement.replaceChildren();
+      if (sites.length === 0) {
+        const emptyItem = document.createElement("li");
+        const emptyLink = document.createElement("a");
+        emptyLink.href = "#";
+        emptyLink.textContent = "No sites created yet.";
+        emptyItem.appendChild(emptyLink);
+        siteOptionsElement.appendChild(emptyItem);
+        return;
+      }
+
+      sites.forEach((site) => {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = "#";
+        link.dataset.siteId = String(site.id);
+        link.textContent = site.site_name;
+        if (selectedSite && Number(selectedSite.id) === Number(site.id)) link.classList.add("selected");
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          currentTabSiteId = String(site.id);
+          sessionStorage.setItem("smsys_site_id", currentTabSiteId);
+          if (siteNameElement) siteNameElement.textContent = site.site_name;
+          siteOptionsElement.querySelectorAll("[data-site-id]").forEach((option) => {
+            option.classList.toggle("selected", option.dataset.siteId === currentTabSiteId);
+          });
+          const nextUrl = new URL(window.location.href);
+          nextUrl.searchParams.set("site_id", currentTabSiteId);
+          window.history.replaceState({}, "", nextUrl);
+          const dropdown = link.closest("details");
+          if (dropdown) dropdown.open = false;
+        });
+        item.appendChild(link);
+        siteOptionsElement.appendChild(item);
+      });
+    } catch (error) {
+      console.error("Could not load supervisor sites:", error);
+      if (siteNameElement) siteNameElement.textContent = "Backend unavailable";
+    }
+  }
+
+  loadOwnedSitesForTab();
+}
+
+/* ---------- 4. Sample data + renderers (tab pages only) ---------- */
 if (app) {
   const set = (id, v) => { const e = $(id); if (e) e.innerHTML = v; };
   const pill = (c, t) => `<span class="pill ${c}">${t}</span>`;

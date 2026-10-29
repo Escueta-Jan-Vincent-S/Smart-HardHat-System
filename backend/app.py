@@ -1,3 +1,4 @@
+import hashlib
 import os
 import secrets
 import sqlite3
@@ -59,6 +60,27 @@ def initialize_database():
             full_name TEXT NOT NULL,
             supervisor_pin TEXT NOT NULL,
             created_at TEXT NOT NULL,
+            FOREIGN KEY (site_id)
+                REFERENCES sites(id)
+                ON DELETE CASCADE
+        )
+        """
+    )
+
+    # Opaque bearer sessions issued only after a successful site/PIN verification.
+    # Tokens are stored as SHA-256 hashes; the raw token is returned to the client once.
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS supervisor_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            token_hash TEXT NOT NULL UNIQUE,
+            supervisor_id INTEGER NOT NULL,
+            site_id INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            FOREIGN KEY (supervisor_id)
+                REFERENCES supervisors(id)
+                ON DELETE CASCADE,
             FOREIGN KEY (site_id)
                 REFERENCES sites(id)
                 ON DELETE CASCADE
@@ -166,6 +188,10 @@ def initialize_database():
         """
     )
 
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_supervisor_sessions_expiry "
+        "ON supervisor_sessions(expires_at)"
+    )
     cursor.execute(
         "CREATE INDEX IF NOT EXISTS idx_workers_site ON workers(site_id)"
     )
@@ -305,6 +331,98 @@ def display_zone(floor, zone):
         zone_text = f"Zone {zone_text}"
 
     return f"{floor_text}: {zone_text}"
+
+
+def hash_access_token(token):
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def get_authenticated_supervisor(connection):
+    """Resolve a valid, unexpired bearer token to its saved supervisor identity."""
+    authorization = request.headers.get("Authorization", "")
+    scheme, separator, token = authorization.partition(" ")
+    if not separator or scheme.lower() != "bearer" or not token.strip():
+        return None
+
+    session = connection.execute(
+        """
+        SELECT
+            sessions.id AS session_id,
+            sessions.supervisor_id,
+            sessions.site_id,
+            sessions.expires_at,
+            supervisors.full_name AS supervisor_name
+        FROM supervisor_sessions AS sessions
+        INNER JOIN supervisors ON supervisors.id = sessions.supervisor_id
+        WHERE sessions.token_hash = ?
+        LIMIT 1
+        """,
+        (hash_access_token(token.strip()),),
+    ).fetchone()
+
+    if session is None:
+        return None
+
+    try:
+        expires_at = datetime.fromisoformat(session["expires_at"])
+        now = datetime.now().astimezone()
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=now.tzinfo)
+    except (TypeError, ValueError):
+        expires_at = datetime.min.replace(tzinfo=datetime.now().astimezone().tzinfo)
+
+    if expires_at <= datetime.now().astimezone():
+        connection.execute(
+            "DELETE FROM supervisor_sessions WHERE id = ?",
+            (session["session_id"],),
+        )
+        connection.commit()
+        return None
+
+    return session
+
+
+def get_owned_sites(connection, supervisor_name):
+    """Sites associated with the authenticated supervisor name, never all sites."""
+    return connection.execute(
+        """
+        SELECT DISTINCT
+            sites.id,
+            sites.site_name,
+            sites.site_code,
+            sites.site_location,
+            sites.status,
+            sites.created_at
+        FROM sites
+        INNER JOIN supervisors AS site_supervisor
+            ON site_supervisor.site_id = sites.id
+        WHERE LOWER(TRIM(site_supervisor.full_name)) = LOWER(TRIM(?))
+        ORDER BY sites.id DESC
+        """,
+        (supervisor_name,),
+    ).fetchall()
+
+
+def get_owned_site_by_id(connection, site_id, supervisor_name):
+    """Return a site only when its associated supervisor matches the login."""
+    return connection.execute(
+        """
+        SELECT DISTINCT
+            sites.id,
+            sites.site_name,
+            sites.site_code,
+            sites.site_location,
+            sites.status,
+            sites.created_at
+        FROM sites
+        INNER JOIN supervisors AS site_supervisor
+            ON site_supervisor.site_id = sites.id
+        WHERE sites.id = ?
+          AND LOWER(TRIM(site_supervisor.full_name)) = LOWER(TRIM(?))
+        LIMIT 1
+        """,
+        (site_id, supervisor_name),
+    ).fetchone()
 
 
 # ============================================================
@@ -458,6 +576,7 @@ def verify_site():
                 sites.site_location,
                 sites.status,
                 sites.created_at,
+                supervisors.id AS supervisor_id,
                 supervisors.full_name AS supervisor_name
             FROM sites
             INNER JOIN supervisors ON supervisors.site_id = sites.id
@@ -475,12 +594,36 @@ def verify_site():
                 "message": "Invalid Site Name, Site Code, or Supervisor PIN.",
             }), 401
 
+        # Issue a short-lived bearer token. Dashboard APIs must validate this token;
+        # the site_id query parameter alone is never treated as authorization.
+        issued_at = datetime.now().astimezone()
+        expires_at = issued_at + timedelta(hours=12)
+        access_token = secrets.token_urlsafe(32)
+        connection.execute(
+            """
+            INSERT INTO supervisor_sessions (
+                token_hash, supervisor_id, site_id, created_at, expires_at
+            ) VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                hash_access_token(access_token),
+                site["supervisor_id"],
+                site["id"],
+                issued_at.isoformat(timespec="seconds"),
+                expires_at.isoformat(timespec="seconds"),
+            ),
+        )
+        connection.commit()
+
         return jsonify({
             "success": True,
             "message": "Site verified successfully.",
             "site": {
                 **serialize_site(site),
                 "supervisor_name": site["supervisor_name"],
+                "access_token": access_token,
+                "token_type": "Bearer",
+                "expires_at": expires_at.isoformat(timespec="seconds"),
             },
         }), 200
 
@@ -496,46 +639,117 @@ def verify_site():
 
 
 # ============================================================
+# AUTHENTICATED SUPERVISOR SITES / LOGOUT
+# ============================================================
+
+@app.route("/api/sites/mine", methods=["GET"])
+def my_sites():
+    """Return only sites associated with the authenticated supervisor identity."""
+    connection = get_database()
+
+    try:
+        supervisor = get_authenticated_supervisor(connection)
+        if supervisor is None:
+            return jsonify({
+                "success": False,
+                "message": "Supervisor session is missing or expired. Please log in again.",
+            }), 401
+
+        sites = get_owned_sites(connection, supervisor["supervisor_name"])
+        requested_site_id = request.args.get("site_id", type=int)
+
+        if requested_site_id is not None:
+            site = get_owned_site_by_id(
+                connection,
+                requested_site_id,
+                supervisor["supervisor_name"],
+            )
+            if site is None:
+                return jsonify({
+                    "success": False,
+                    "message": "You do not have permission to access this site.",
+                }), 403
+        else:
+            site = sites[0] if sites else None
+
+        return jsonify({
+            "success": True,
+            "site": serialize_site(site),
+            "sites": [serialize_site(row) for row in sites],
+            "supervisor_name": supervisor["supervisor_name"],
+        }), 200
+
+    except Exception as error:
+        app.logger.exception("Loading supervisor sites failed: %s", error)
+        return jsonify({
+            "success": False,
+            "message": "Failed to load supervisor sites.",
+        }), 500
+
+    finally:
+        connection.close()
+
+
+@app.route("/api/auth/logout", methods=["POST"])
+def api_logout():
+    """Revoke the bearer token used by the current dashboard session."""
+    authorization = request.headers.get("Authorization", "")
+    scheme, separator, token = authorization.partition(" ")
+    connection = get_database()
+
+    try:
+        if separator and scheme.lower() == "bearer" and token.strip():
+            connection.execute(
+                "DELETE FROM supervisor_sessions WHERE token_hash = ?",
+                (hash_access_token(token.strip()),),
+            )
+            connection.commit()
+        return jsonify({"success": True, "message": "Logged out."}), 200
+    except Exception as error:
+        app.logger.exception("Logout failed: %s", error)
+        return jsonify({"success": False, "message": "Could not revoke the session."}), 500
+    finally:
+        connection.close()
+
+
+# ============================================================
 # DASHBOARD OVERVIEW API
 # ============================================================
 
 @app.route("/api/dashboard/overview", methods=["GET"])
 def dashboard_overview():
-    """Return real SQLite-backed overview data for one site.
+    """Return real SQLite-backed overview data for an authorized supervisor site.
 
-    The monitoring tables are created empty. Values stay empty/zero until
-    the worker/device/hardware pipeline records real monitoring events.
+    A valid bearer token is required. The token resolves the saved supervisor identity;
+    the site list and every selected site are filtered to that identity. The monitoring
+    tables stay empty until the worker/device/hardware pipeline records real events.
     This endpoint deliberately does not insert demonstration data.
     """
     connection = get_database()
 
     try:
-        sites = connection.execute(
-            """
-            SELECT id, site_name, site_code, site_location, status, created_at
-            FROM sites
-            ORDER BY id DESC
-            """
-        ).fetchall()
-        sites_payload = [serialize_site(row) for row in sites]
+        supervisor = get_authenticated_supervisor(connection)
+        if supervisor is None:
+            return jsonify({
+                "success": False,
+                "message": "Supervisor session is missing or expired. Please log in again.",
+            }), 401
 
+        sites = get_owned_sites(connection, supervisor["supervisor_name"])
+        sites_payload = [serialize_site(row) for row in sites]
         requested_site_id = request.args.get("site_id", type=int)
 
         if requested_site_id is not None:
-            site_row = connection.execute(
-                """
-                SELECT id, site_name, site_code, site_location, status, created_at
-                FROM sites
-                WHERE id = ?
-                """,
-                (requested_site_id,),
-            ).fetchone()
-
+            site_row = get_owned_site_by_id(
+                connection,
+                requested_site_id,
+                supervisor["supervisor_name"],
+            )
             if site_row is None:
                 return jsonify({
                     "success": False,
-                    "message": "The selected site was not found.",
-                }), 404
+                    "message": "You do not have permission to access this site.",
+                }), 403
         else:
             site_row = sites[0] if sites else None
 
