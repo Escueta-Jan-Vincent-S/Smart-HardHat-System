@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import "./CreateSite.css";
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
+
 
 function CreateSiteExisiting() {
   const navigate = useNavigate();
@@ -133,9 +135,11 @@ function CreateSiteExisiting() {
       <div className="create-site-panel">
         {/* HEADER */}
         <header className="cs-header">
-          <span className="cs-logo" aria-hidden="true">
-            ⛑️
-          </span>
+          <img
+            src={hardhatLogo}
+            alt="SMSYS Smart Hardhat Logo"
+            className="cs-logo"
+          />
 
           <div className="cs-brand">
             <h2>SMSYS</h2>

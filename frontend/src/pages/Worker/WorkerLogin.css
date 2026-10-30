@@ -10,6 +10,15 @@
   overflow-y: auto;
 }
 
+/* Header logo image */
+.site-page.worker-site-page .site-header .site-logo {
+  width: clamp(54px, 6vw, 72px);
+  height: clamp(54px, 6vw, 72px);
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 /* Keep the form's normal .site-card width and max-width from Site.css. */
 .site-page.worker-site-page .site-card.worker-login-card {
   display: flex;
@@ -289,6 +298,13 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 560px) {
+  .site-page.worker-site-page .site-header .site-logo {
+    width: 48px;
+    height: 48px;
+  }
+}
+
 @media (max-width: 480px) {
   .worker-option {
     gap: 9px;
@@ -298,5 +314,12 @@
 
   .worker-option__status {
     font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-page.worker-site-page .site-header .site-logo {
+    width: 44px;
+    height: 44px;
   }
 }

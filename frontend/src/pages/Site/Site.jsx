@@ -5,6 +5,7 @@ import "./Site.css";
 import "./CreateSiteModal.css";
 
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
 
 function Site() {
   const navigate = useNavigate();
@@ -134,7 +135,11 @@ function Site() {
       <div className="site-panel">
         {/* HEADER */}
         <header className="site-header">
-          <span className="site-logo">⛑️</span>
+          <img
+            src={hardhatLogo}
+            alt="Smart Hardhat Logo"
+            className="site-logo"
+          />
 
           <div className="site-brand">
             <h2>SMSYS</h2>

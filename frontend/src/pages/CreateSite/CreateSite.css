@@ -82,9 +82,13 @@
 
 
 .cs-logo {
-  font-size: clamp(54px, 6vw, 72px);
+  width: clamp(54px, 6vw, 72px);
+  height: clamp(54px, 6vw, 72px);
 
-  line-height: 1;
+  display: block;
+  flex-shrink: 0;
+
+  object-fit: contain;
 }
 
 
@@ -417,7 +421,8 @@
 
 
   .cs-logo {
-    font-size: 48px;
+    width: 48px;
+    height: 48px;
   }
 
 
@@ -496,7 +501,8 @@
 
 
   .cs-logo {
-    font-size: 44px;
+    width: 44px;
+    height: 44px;
   }
 
 

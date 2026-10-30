@@ -1,5 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
+
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
+
 import "./verify.css";
 
 function formatCreatedAt(value) {
@@ -57,9 +60,11 @@ function Verify() {
 
       <section className="verify-content">
         <header className="verify-header">
-          <span className="verify-header__logo" aria-hidden="true">
-            ⛑️
-          </span>
+          <img
+            src={hardhatLogo}
+            alt="SMSYS Smart Hardhat Logo"
+            className="verify-header__logo"
+          />
 
           <div className="verify-header__brand">
             <h2>SMSYS</h2>

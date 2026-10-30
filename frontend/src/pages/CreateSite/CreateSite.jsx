@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./CreateSite.css";
 
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
 
 
 function CreateSite() {
@@ -183,9 +184,11 @@ function CreateSite() {
 
         <header className="cs-header">
 
-          <span className="cs-logo">
-            ⛑️
-          </span>
+          <img
+            src={hardhatLogo}
+            alt="SMSYS Smart Hardhat Logo"
+            className="cs-logo"
+          />
 
 
           <div className="cs-brand">

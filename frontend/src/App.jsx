@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Site from "./pages/Site/Site";
 import CreateSite from "./pages/CreateSite/CreateSite";
+import CreateSiteExisiting from "./pages/CreateSite/CreateSiteExisiting";
 import SiteCreated from "./pages/SiteCreated/SiteCreated";
 import Verify from "./pages/Verify/verify";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -18,6 +19,7 @@ function RouteTitle() {
     if (
       path === "/site-access" ||
       path === "/create-site" ||
+      path === "/create-site-existing" ||
       path === "/site-created" ||
       path === "/verify"
     ) {
@@ -40,17 +42,57 @@ function App() {
       <RouteTitle />
 
       <Routes>
-        <Route path="/" element={<Navigate to="/site-access" replace />} />
+        <Route
+          path="/"
+          element={<Navigate to="/site-access" replace />}
+        />
 
-        <Route path="/site-access" element={<Site />} />
-        <Route path="/create-site" element={<CreateSite />} />
-        <Route path="/site-created" element={<SiteCreated />} />
-        <Route path="/verify" element={<Verify />} />
+        {/* SITE ACCESS */}
+        <Route
+          path="/site-access"
+          element={<Site />}
+        />
 
-        {/* Separate login page for the monitoring dashboard. */}
-        <Route path="/dashboard-login" element={<DashboardLogin />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/worker-login" element={<WorkerLogin />} />
+        {/* CREATE NEW SITE */}
+        <Route
+          path="/create-site"
+          element={<CreateSite />}
+        />
+
+        {/* CREATE SITE FOR EXISTING SUPERVISOR */}
+        <Route
+          path="/create-site-existing"
+          element={<CreateSiteExisiting />}
+        />
+
+        {/* SITE CREATED */}
+        <Route
+          path="/site-created"
+          element={<SiteCreated />}
+        />
+
+        {/* VERIFICATION */}
+        <Route
+          path="/verify"
+          element={<Verify />}
+        />
+
+        {/* DASHBOARD */}
+        <Route
+          path="/dashboard-login"
+          element={<DashboardLogin />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+        {/* WORKER LOGIN */}
+        <Route
+          path="/worker-login"
+          element={<WorkerLogin />}
+        />
       </Routes>
     </>
   );

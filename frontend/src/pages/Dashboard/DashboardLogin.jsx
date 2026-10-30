@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 // Reuse the same styles and background as the existing Site.jsx page.
 import "../Site/Site.css";
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
 
 function DashboardLogin() {
   const navigate = useNavigate();
@@ -90,9 +91,18 @@ function DashboardLogin() {
     >
       <div className="site-panel">
         <header className="site-header">
-          <span className="site-logo" aria-hidden="true">
-            ⛑️
-          </span>
+          <img
+            src={hardhatLogo}
+            alt="SMSYS Smart Hardhat Logo"
+            className="site-logo"
+            style={{
+              width: "72px",
+              height: "72px",
+              objectFit: "contain",
+              display: "block",
+              flexShrink: 0,
+            }}
+          />
 
           <div className="site-brand">
             <h2>SMSYS</h2>
@@ -159,7 +169,9 @@ function DashboardLogin() {
               placeholder="Enter supervisor PIN"
               value={supervisorPin}
               onChange={(event) =>
-                setSupervisorPin(event.target.value.replace(/\D/g, "").slice(0, 6))
+                setSupervisorPin(
+                  event.target.value.replace(/\D/g, "").slice(0, 6)
+                )
               }
               inputMode="numeric"
               maxLength={6}

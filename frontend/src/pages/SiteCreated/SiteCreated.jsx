@@ -1,5 +1,8 @@
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
+
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
+
 import "./SiteCreated.css";
 
 function formatCreatedAt(value) {
@@ -20,6 +23,7 @@ function formatCreatedAt(value) {
 function SiteCreated() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const site = location.state?.site;
   const supervisorType = location.state?.supervisorType || "new";
   const isExistingSupervisor = supervisorType === "existing";
@@ -33,7 +37,9 @@ function SiteCreated() {
     ["Site Code:", site.site_code],
     ["Supervisor Full Name:", site.supervisor_name],
     [
-      isExistingSupervisor ? "Supervisor PIN (unchanged):" : "New Supervisor PIN:",
+      isExistingSupervisor
+        ? "Supervisor PIN (unchanged):"
+        : "New Supervisor PIN:",
       site.supervisor_pin,
     ],
     ["Site Location:", site.site_location],
@@ -47,9 +53,12 @@ function SiteCreated() {
     >
       <section className="site-result-shell">
         <header className="sr-header">
-          <span className="sr-logo" aria-hidden="true">
-            ⛑️
-          </span>
+          <img
+            src={hardhatLogo}
+            alt="SMSYS Smart Hardhat Logo"
+            className="sr-logo"
+          />
+
           <div className="sr-brand">
             <h2>SMSYS</h2>
             <p>SMART MONITORING SYSTEM</p>
@@ -60,7 +69,9 @@ function SiteCreated() {
           <span className="sr-check" aria-hidden="true">
             ✓
           </span>
+
           <h1>SITE CREATED SUCCESSFULLY!</h1>
+
           <p className="sr-subtitle">Site Information</p>
 
           <div className="sr-info">

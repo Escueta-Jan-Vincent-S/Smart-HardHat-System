@@ -1,5 +1,8 @@
 import { useState } from "react";
+
 import bgImage from "../../assets/images/landing-page-background.jpg";
+import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
+
 import "../Site/Site.css";
 import "./WorkerLogin.css";
 
@@ -28,7 +31,12 @@ function HardhatIcon({ className = "" }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M11 45h42" stroke="#6D4200" strokeWidth="2.5" strokeLinecap="round" />
+      <path
+        d="M11 45h42"
+        stroke="#6D4200"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -36,7 +44,13 @@ function HardhatIcon({ className = "" }) {
 function CheckIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <path d="m5 12.5 4.2 4.2L19.5 6.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m5 12.5 4.2 4.2L19.5 6.5"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -49,7 +63,13 @@ function ChevronIcon({ isOpen }) {
       aria-hidden="true"
       fill="none"
     >
-      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m6 9 6 6 6-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -80,55 +100,81 @@ function WorkerLogin() {
     const cleanSiteCode = siteCode.trim();
 
     if (!cleanSiteCode) {
-      if (!keepMessages) setError("Please enter the Site Code first.");
+      if (!keepMessages) {
+        setError("Please enter the Site Code first.");
+      }
       return;
     }
 
     setIsLoadingHardhats(true);
+
     if (!keepMessages) {
       setError("");
       setSuccess(null);
     }
 
     try {
-      const query = new URLSearchParams({ site_code: cleanSiteCode });
-      if (fullName.trim()) query.set("full_name", fullName.trim());
+      const query = new URLSearchParams({
+        site_code: cleanSiteCode,
+      });
+
+      if (fullName.trim()) {
+        query.set("full_name", fullName.trim());
+      }
 
       const response = await fetch(
         `${API_BASE}/api/workers/available-hardhats?${query.toString()}`,
-        { headers: { Accept: "application/json" } }
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
       );
+
       const data = await response.json();
 
       if (!response.ok || !data.success) {
         setHardhats([]);
         setSite(null);
         setHasLoadedHardhats(false);
+
         if (!keepMessages) {
-          setError(data.message || "Unable to load Smart Hardhats for this site.");
+          setError(
+            data.message ||
+              "Unable to load Smart Hardhats for this site."
+          );
         }
+
         return;
       }
 
-      const returnedHardhats = Array.isArray(data.hardhats) ? data.hardhats : [];
+      const returnedHardhats = Array.isArray(data.hardhats)
+        ? data.hardhats
+        : [];
+
       setHardhats(returnedHardhats);
       setSite(data.site || null);
       setHasLoadedHardhats(true);
 
       setSelectedHardhat((current) => {
         const stillSelectable = returnedHardhats.some(
-          (hardhat) => hardhat.device_code === current && hardhat.is_available
+          (hardhat) =>
+            hardhat.device_code === current && hardhat.is_available
         );
+
         return stillSelectable ? current : "";
       });
-
     } catch (requestError) {
       console.error("Could not load Smart Hardhats:", requestError);
+
       setHardhats([]);
       setSite(null);
       setHasLoadedHardhats(false);
+
       if (!keepMessages) {
-        setError("Unable to connect to the SMSYS backend. Check that Flask is running.");
+        setError(
+          "Unable to connect to the SMSYS backend. Check that Flask is running."
+        );
       }
     } finally {
       setIsLoadingHardhats(false);
@@ -137,6 +183,7 @@ function WorkerLogin() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     setError("");
     setSuccess(null);
 
@@ -151,7 +198,9 @@ function WorkerLogin() {
     }
 
     if (!hasLoadedHardhats) {
-      setError("Please load the Smart Hardhat list by leaving the Site Code or Full Name field.");
+      setError(
+        "Please load the Smart Hardhat list by leaving the Site Code or Full Name field."
+      );
       return;
     }
 
@@ -165,7 +214,9 @@ function WorkerLogin() {
     );
 
     if (!chosenHardhat || !chosenHardhat.is_available) {
-      setError("That Smart Hardhat is no longer available. Refresh the list and select another one.");
+      setError(
+        "That Smart Hardhat is no longer available. Refresh the list and select another one."
+      );
       return;
     }
 
@@ -203,7 +254,10 @@ function WorkerLogin() {
       await loadHardhats({ keepMessages: true });
     } catch (requestError) {
       console.error("Worker login failed:", requestError);
-      setError("Unable to connect to the SMSYS backend. Check that Flask is running.");
+
+      setError(
+        "Unable to connect to the SMSYS backend. Check that Flask is running."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -216,9 +270,12 @@ function WorkerLogin() {
     >
       <div className="site-panel">
         <header className="site-header">
-          <span className="site-logo" aria-hidden="true">
-            ⛑️
-          </span>
+          <img
+            src={hardhatLogo}
+            alt="SMSYS Smart Hardhat Logo"
+            className="site-logo"
+          />
+
           <div className="site-brand">
             <h2>SMSYS</h2>
             <p>SMART MONITORING SYSTEM</p>
@@ -227,14 +284,18 @@ function WorkerLogin() {
 
         <div className="site-title">
           <h1>Worker Page</h1>
-          <p>Please enter your name and select an available Smart Hardhat.</p>
+          <p>
+            Please enter your name and select an available Smart Hardhat.
+          </p>
         </div>
 
         <form className="site-card worker-login-card" onSubmit={handleSubmit}>
           <div className="worker-field">
             <label htmlFor="worker-full-name">Full Name</label>
+
             <div className="site-input">
               <span aria-hidden="true">👤</span>
+
               <input
                 id="worker-full-name"
                 type="text"
@@ -253,7 +314,9 @@ function WorkerLogin() {
                   setError("");
                 }}
                 onBlur={() => {
-                  if (siteCode.trim()) loadHardhats();
+                  if (siteCode.trim()) {
+                    loadHardhats();
+                  }
                 }}
               />
             </div>
@@ -261,8 +324,10 @@ function WorkerLogin() {
 
           <div className="worker-field">
             <label htmlFor="worker-site-code">Site Code</label>
+
             <div className="site-input">
               <span aria-hidden="true">🔒</span>
+
               <input
                 id="worker-site-code"
                 type="text"
@@ -281,7 +346,9 @@ function WorkerLogin() {
           </div>
 
           <fieldset className="worker-field worker-hardhat-field">
-            <legend className="worker-field__label">Select Available Smart Hardhat</legend>
+            <legend className="worker-field__label">
+              Select Available Smart Hardhat
+            </legend>
 
             <div className="worker-picker">
               <button
@@ -291,17 +358,22 @@ function WorkerLogin() {
                 onClick={() => setPickerOpen((open) => !open)}
               >
                 <HardhatIcon className="worker-picker__icon" />
+
                 <span>{selectedHardhat || "Choose a hardhat"}</span>
+
                 <ChevronIcon isOpen={pickerOpen} />
               </button>
 
               {pickerOpen && (
                 <div className="worker-picker__list">
                   {isLoadingHardhats ? (
-                    <p className="worker-picker__message">Loading Smart Hardhats...</p>
+                    <p className="worker-picker__message">
+                      Loading Smart Hardhats...
+                    </p>
                   ) : !hasLoadedHardhats ? (
                     <p className="worker-picker__message">
-                      Enter your Site Code, then move to the next field to load the list.
+                      Enter your Site Code, then move to the next field to
+                      load the list.
                     </p>
                   ) : hardhats.length === 0 ? (
                     <p className="worker-picker__message">
@@ -319,9 +391,15 @@ function WorkerLogin() {
                         <label
                           className={[
                             "worker-option",
-                            !hardhat.is_available ? "worker-option--disabled" : "",
-                            selectedHardhat === hardhat.device_code ? "worker-option--selected" : "",
-                          ].filter(Boolean).join(" ")}
+                            !hardhat.is_available
+                              ? "worker-option--disabled"
+                              : "",
+                            selectedHardhat === hardhat.device_code
+                              ? "worker-option--selected"
+                              : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
                           key={hardhat.id}
                         >
                           <input
@@ -329,8 +407,12 @@ function WorkerLogin() {
                             type="radio"
                             name="hardhat"
                             value={hardhat.device_code}
-                            checked={selectedHardhat === hardhat.device_code}
-                            disabled={!hardhat.is_available || isSubmitting}
+                            checked={
+                              selectedHardhat === hardhat.device_code
+                            }
+                            disabled={
+                              !hardhat.is_available || isSubmitting
+                            }
                             onChange={() => {
                               setSelectedHardhat(hardhat.device_code);
                               setError("");
@@ -338,13 +420,27 @@ function WorkerLogin() {
                             }}
                             required
                           />
+
                           <span
-                            className={`worker-option__dot ${hardhat.is_available ? "is-available" : "is-in-use"}`}
+                            className={`worker-option__dot ${
+                              hardhat.is_available
+                                ? "is-available"
+                                : "is-in-use"
+                            }`}
                             aria-hidden="true"
                           />
-                          <span className="worker-option__id">{hardhat.device_code}</span>
-                          <span className={`worker-option__status ${statusClass}`}>
-                            {hardhat.display_status || (hardhat.is_available ? "Available" : "In Use")}
+
+                          <span className="worker-option__id">
+                            {hardhat.device_code}
+                          </span>
+
+                          <span
+                            className={`worker-option__status ${statusClass}`}
+                          >
+                            {hardhat.display_status ||
+                              (hardhat.is_available
+                                ? "Available"
+                                : "In Use")}
                           </span>
                         </label>
                       );
@@ -353,23 +449,42 @@ function WorkerLogin() {
                 </div>
               )}
             </div>
-            {site && <p className="worker-site-note">Site: {site.site_name}</p>}
+
+            {site && (
+              <p className="worker-site-note">
+                Site: {site.site_name}
+              </p>
+            )}
           </fieldset>
 
           {error && (
-            <p className="worker-feedback worker-feedback--error" role="alert">
+            <p
+              className="worker-feedback worker-feedback--error"
+              role="alert"
+            >
               {error}
             </p>
           )}
 
           {success && (
-            <div className="worker-feedback worker-feedback--success" role="status" aria-live="polite">
-              <span className="worker-feedback__check" aria-hidden="true">
+            <div
+              className="worker-feedback worker-feedback--success"
+              role="status"
+              aria-live="polite"
+            >
+              <span
+                className="worker-feedback__check"
+                aria-hidden="true"
+              >
                 <CheckIcon />
               </span>
+
               <div>
                 <strong>{success.message}</strong>
-                <p>{success.workerName} · {success.hardhatCode}</p>
+                <p>
+                  {success.workerName} · {success.hardhatCode}
+                </p>
+
                 {success.siteName && <p>{success.siteName}</p>}
               </div>
             </div>
@@ -387,7 +502,9 @@ function WorkerLogin() {
           <button
             className="worker-refresh-btn"
             type="button"
-            disabled={isLoadingHardhats || isSubmitting || !siteCode.trim()}
+            disabled={
+              isLoadingHardhats || isSubmitting || !siteCode.trim()
+            }
             onClick={() => loadHardhats()}
           >
             Refresh Smart Hardhat List

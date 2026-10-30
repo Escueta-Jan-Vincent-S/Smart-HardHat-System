@@ -46,8 +46,11 @@
 }
 
 .sr-logo {
-  font-size: clamp(54px, 6vw, 72px);
-  line-height: 1;
+  width: clamp(54px, 6vw, 72px);
+  height: clamp(54px, 6vw, 72px);
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .sr-brand h2 {
@@ -157,6 +160,10 @@
   background: #ffc13d;
 }
 
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 560px) {
   .site-result-page {
     align-items: flex-start;
@@ -175,7 +182,8 @@
   }
 
   .sr-logo {
-    font-size: 48px;
+    width: 48px;
+    height: 48px;
   }
 
   .sr-brand h2 {
@@ -202,10 +210,19 @@
   }
 }
 
+/* =========================
+   VERY SMALL PHONE
+========================= */
+
 @media (max-width: 380px) {
   .sr-header {
     flex-direction: column;
     text-align: center;
+  }
+
+  .sr-logo {
+    width: 44px;
+    height: 44px;
   }
 
   .sr-row {
