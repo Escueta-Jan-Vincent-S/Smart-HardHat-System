@@ -1720,324 +1720,18 @@ if (app && document.body.dataset.active === "ppe") {
   window.setInterval(loadPPEStatus, 5000);
 }
 
-/* ---------- 6. Sample data + renderers for other tab pages ---------- */
+/* ---------- 6. Date pickers for other tab pages ---------- */
 
 if (app && document.body.dataset.active !== "ppe") {
-  const set = (id, value) => {
-    const element = $(id);
-
-    if (element) {
-      element.innerHTML = value;
-    }
-  };
-
-  const pill = (className, text) =>
-    `<span class="pill ${className}">${text}</span>`;
-
-  const dot = (value) =>
-    `<i class="status-dot ${["no", "yes", "na"][value]}">${
-      ["✕", "✓", "?"][value]
-    }</i>`;
-
-  const table = (head, rows) => `
-    <table class="table">
-      <thead>
-        <tr>
-          ${head.map((heading) => `<th>${heading}</th>`).join("")}
-        </tr>
-      </thead>
-
-      <tbody>
-        ${rows
-          .map(
-            (row) => `
-              <tr>
-                ${row.map((cell) => `<td>${cell}</td>`).join("")}
-              </tr>
-            `
-          )
-          .join("")}
-      </tbody>
-    </table>
-  `;
-
-  const NAME = "Juan dela Cruz";
-
-  const ids = ["H-001", "H-002", "H-003"];
-
-  const times = [
-    "10:42 AM",
-    "10:41 AM",
-    "10:39 AM",
-  ];
-
-  const dur = [
-    "-",
-    "-",
-    "850 ms",
-  ];
-
-  const PPE = [
-    [1, 1, 1, 1],
-    [1, 0, 1, 1],
-    [2, 2, 2, 2],
-  ];
-
-  const drowsy = [
-    ["n", "Normal"],
-    ["n", "Normal"],
-    ["d", "Drowsy"],
-  ];
-
-  const device = [
-    ["n", "Online"],
-    ["n", "Online"],
-    ["d", "Offline"],
-  ];
-
-  const zone = [
-    ["n", "Localized", 1, "A"],
-    ["n", "Localized", 2, "B"],
-    ["d", "Unlocalized", "-", "-"],
-  ];
-
-  const H_PPE = [
-    "Device ID",
-    "Worker Name",
-    "Hardhat",
-    "Safety Vest",
-    "Gloves",
-    "Safety Boots",
-    "Last Seen",
-  ];
-
-  const H_ST = [
-    "Device ID",
-    "Worker Name",
-    "Status",
-    "Time",
-    "Duration (Millisecond)",
-  ];
-
-  const H_ZONE = [
-    "Device ID",
-    "Worker Name",
-    "Status",
-    "Floor",
-    "Zone",
-    "Time",
-    "Duration (Millisecond)",
-  ];
-
-  const ppeRows = ids.map((id, index) => [
-    id,
-    NAME,
-    ...PPE[index].map(dot),
-    times[index],
-  ]);
-
-  const drRows = ids.map((id, index) => [
-    id,
-    NAME,
-    pill(...drowsy[index]),
-    times[index],
-    dur[index],
-  ]);
-
-  const dvRows = ids.map((id, index) => [
-    id,
-    NAME,
-    pill(...device[index]),
-    times[index],
-    dur[index],
-  ]);
-
-  const znRows = ids.map((id, index) => [
-    id,
-    NAME,
-    pill(zone[index][0], zone[index][1]),
-    zone[index][2],
-    zone[index][3],
-    times[index],
-    dur[index],
-  ]);
-
-  // Summary cards
-  [
-    ["pCompliant", "92%"],
-    ["pViolation", "5%"],
-    ["pUnmon", "3%"],
-    ["dNormal", "66.67%"],
-    ["dDrowsy", "33.33%"],
-    ["dUnmon", "0%"],
-    ["cConnected", "66.67%"],
-    ["cDisconnected", "33.33%"],
-    ["zLocalized", "66.67%"],
-    ["zUnlocalized", "33.33%"],
-  ].forEach(([id, value]) => set(id, value));
-
-  // Tables
-  set("ppeTable", table(H_PPE, ppeRows));
-  set("drTable", table(H_ST, drRows));
-  set("devStatusTable", table(H_ST, dvRows));
-  set("zoneStatusTable", table(H_ZONE, znRows));
-
-  // PPE frames
-  set(
-    "frames",
-    ids
-      .map(
-        (id) => `
-          <figure class="frame">
-            <div class="frame-img"></div>
-            <figcaption>${id}</figcaption>
-          </figure>
-        `
-      )
-      .join("")
-  );
-
-  // Pie charts
-  const pie = (pieId, legendId) => {
-    if (!$ (pieId)) return;
-
-    $(pieId).style.background =
-      "conic-gradient(#2ecc40 0 92%, #e5484d 92% 97%, #8a8d93 97% 100%)";
-
-    set(
-      legendId,
-      [
-        ["yes", "✓", "Compliant", "92%"],
-        ["no", "✕", "Violation", "5%"],
-        ["na", "?", "Unmonitored", "3%"],
-      ]
-        .map(
-          ([className, symbol, label, value]) => `
-            <div class="lg">
-              <i class="status-dot ${className}">${symbol}</i>
-              <span>${label}</span>
-              <b>${value}</b>
-            </div>
-          `
-        )
-        .join("")
-    );
-  };
-
-  pie("pie", "legend");
-  pie("anPie", "anLegend");
-
-  // Hourly trend charts
-  const HRS = [
-    "8:00 AM",
-    "9:00 AM",
-    "10:00 AM",
-    "11:00 AM",
-    "12:00 PM",
-    "1:00 PM",
-    "2:00 PM",
-    "3:00 PM",
-    "4:00 PM",
-  ];
-
-  const trend = (id, series) =>
-    set(
-      id,
-      `
-        <div class="ylab">
-          ${[3, 2, 1, 0]
-            .map((number) => `<span>${number}</span>`)
-            .join("")}
-        </div>
-
-        <div class="cols">
-          ${HRS.map(
-            (hour, index) => `
-              <div class="col">
-                <div class="bars">
-                  ${series
-                    .map(
-                      ([className, values]) => `
-                        <i
-                          class="bar ${className}"
-                          style="height:${(values[index] / 3) * 100}%"
-                        ></i>
-                      `
-                    )
-                    .join("")}
-                </div>
-
-                <span>${hour}</span>
-              </div>
-            `
-          ).join("")}
-        </div>
-      `
-    );
-
-  const S_DR = [
-    ["n", [1, 2, 2, 1, 2, 3, 2, 2, 1]],
-    ["d", [0, 0, 1, 0, 0, 1, 0, 1, 0]],
-    ["u", [0, 0, 0, 0, 1, 0, 0, 0, 0]],
-  ];
-
-  const S_DV = [
-    ["n", [3, 3, 2, 2, 3, 3, 2, 2, 3]],
-    ["d", [0, 0, 1, 1, 0, 0, 1, 1, 0]],
-  ];
-
-  const S_ZN = [
-    ["n", [3, 2, 2, 3, 3, 2, 2, 3, 3]],
-    ["d", [0, 1, 1, 0, 0, 1, 1, 0, 0]],
-  ];
-
-  trend("trend", S_DR);
-  trend("devTrend", S_DV);
-  trend("zoneTrend", S_ZN);
-
-  trend("anDrowsy", S_DR);
-  trend("anDevices", S_DV);
-  trend("anZones", S_ZN);
-
-  // Alerts history
-  const hist = (tableId, buttonId, headings, rows) => {
-    if (!$(tableId)) return;
-
-    const draw = (showAll) => {
-      set(
-        tableId,
-        table(headings, showAll ? rows : rows.slice(0, 2))
-      );
-
-      set(
-        buttonId,
-        `
-          <button type="button" class="hbtn">
-            ${showAll ? "Show Less ▲" : "View All History ▼"}
-          </button>
-        `
-      );
-
-      if ($(buttonId).firstChild) {
-        $(buttonId).firstChild.onclick = () => draw(!showAll);
-      }
-    };
-
-    draw(false);
-  };
-
-  hist("histPPE", "btnPPE", H_PPE, ppeRows);
-  hist("histDrowsy", "btnDrowsy", H_ST, drRows);
-  hist("histDev", "btnDev", H_ST, dvRows);
-
-  // Date pickers
   const picker = (buttonId, textId, inputId) => {
-    if (!$ (buttonId)) return;
-
+    const button = $(buttonId);
+    const text = $(textId);
     const input = $(inputId);
 
+    if (!button || !text || !input) return;
+
     const show = (value) => {
-      $(textId).textContent = new Date(
+      text.textContent = new Date(
         value + "T00:00"
       ).toLocaleDateString("en-US", {
         month: "long",
@@ -2046,16 +1740,24 @@ if (app && document.body.dataset.active !== "ppe") {
       });
     };
 
+    const today = new Date();
+
     input.value = new Date(
-      Date.now() - new Date().getTimezoneOffset() * 6e4
+      today.getTime() - today.getTimezoneOffset() * 60000
     )
       .toISOString()
       .slice(0, 10);
 
     show(input.value);
 
-    $(buttonId).onclick = () =>
-      input.showPicker ? input.showPicker() : input.focus();
+    button.onclick = () => {
+      if (input.showPicker) {
+        input.showPicker();
+      } else {
+        input.focus();
+        input.click();
+      }
+    };
 
     input.onchange = () => {
       if (input.value) {

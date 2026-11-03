@@ -4,17 +4,57 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SMSYS - Alerts History</title>
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="../dashboard.css" />
   </head>
+
   <body data-active="history" data-navset="dashboard">
     <div id="app">
       <h1 class="dash-title">Alerts History</h1>
-      <section class="dcard g-panel" style="left:325px;top:160px;width:1095px;height:210px">
-        <h3>Alert History Details</h3>
-        <p style="padding:16px 11px;font-size:17px;line-height:1.7;">Alert history for the selected site will be displayed in this section.</p>
+
+      <!-- Date picker -->
+      <div class="date-wrap">
+        <button type="button" class="date-btn" id="dateBtn">
+          <span id="dateText"></span>
+          <svg viewBox="0 0 24 24">
+            <path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zm-2 8v9h14v-9zm2 2h3v3H7z"/>
+          </svg>
+        </button>
+
+        <input type="date" id="dateInput" tabindex="-1" aria-label="Select date" />
+      </div>
+
+      <!-- History panel -->
+      <section class="dcard g-panel" style="left:325px;top:205px;width:1095px;height:787px">
+        <div class="hist">
+
+          <div class="hsec">
+            <h4>PPE Alerts History</h4>
+            <div class="htbl" id="histPPE"></div>
+            <div class="hbtn-wrap" id="btnPPE"></div>
+          </div>
+
+          <div class="hsec">
+            <h4>Drowsiness Alerts History</h4>
+            <div class="htbl" id="histDrowsy"></div>
+            <div class="hbtn-wrap" id="btnDrowsy"></div>
+          </div>
+
+          <div class="hsec">
+            <h4>Device Connectivity Alerts History</h4>
+            <div class="htbl" id="histDev"></div>
+            <div class="hbtn-wrap" id="btnDev"></div>
+          </div>
+
+        </div>
       </section>
     </div>
+
+    <!-- Shared dashboard layout -->
     <script src="../dashboardLayout.js"></script>
+
+    <!-- Alerts History functionality -->
+    <script src="alertsHistory.js"></script>
   </body>
-</html>
+</html> 

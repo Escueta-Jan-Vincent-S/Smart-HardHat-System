@@ -1893,6 +1893,24 @@ def dashboard_ppe_frame(record_id):
     finally:
         connection.close()
 
+# ============================================================
+# REGISTER ALERTS HISTORY API
+# ============================================================
+
+try:
+    from .alerts_history_api import register_alerts_history_api
+except ImportError:
+    from alerts_history_api import register_alerts_history_api
+
+
+register_alerts_history_api(
+    app=app,
+    get_database=get_database,
+    get_authenticated_supervisor=get_authenticated_supervisor,
+    get_owned_sites=get_owned_sites,
+    get_owned_site_by_id=get_owned_site_by_id,
+    serialize_site=serialize_site,
+)
 
 # ============================================================
 # START BACKEND
