@@ -1798,6 +1798,49 @@ def resolve_local_frame_path(saved_path):
     return None
 
 
+# ============================================================
+# REGISTER DROWSINESS STATUS API
+# ============================================================
+
+try:
+    from .drowsiness_status_api import register_drowsiness_status_api
+except ImportError:
+    from drowsiness_status_api import register_drowsiness_status_api
+
+
+register_drowsiness_status_api(
+    app=app,
+    get_database=get_database,
+    get_authenticated_supervisor=get_authenticated_supervisor,
+    get_owned_sites=get_owned_sites,
+    get_owned_site_by_id=get_owned_site_by_id,
+    serialize_site=serialize_site,
+    normalized_status=normalized_status,
+)
+
+
+# ============================================================
+# REGISTER DEVICE CONNECTIVITY API
+# ============================================================
+
+try:
+    from .device_connectivity_api import register_device_connectivity_api
+except ImportError:
+    from device_connectivity_api import register_device_connectivity_api
+
+
+register_device_connectivity_api(
+    app=app,
+    get_database=get_database,
+    get_authenticated_supervisor=get_authenticated_supervisor,
+    get_owned_sites=get_owned_sites,
+    get_owned_site_by_id=get_owned_site_by_id,
+    serialize_site=serialize_site,
+    display_device_status=display_device_status,
+)
+
+
+
 @app.route("/api/dashboard/ppe-frames/<int:record_id>", methods=["GET"])
 def dashboard_ppe_frame(record_id):
     """Serve a local detection frame only after validating the supervisor session and site."""

@@ -1,20 +1,82 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>SMSYS - Device Connectivity</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+
     <link rel="stylesheet" href="../dashboard.css" />
   </head>
+
   <body data-active="devices" data-navset="dashboard">
     <div id="app">
+
       <h1 class="dash-title">Device Connectivity</h1>
-      <section class="dcard g-panel" style="left:325px;top:160px;width:1095px;height:210px">
-        <h3>Device Details</h3>
-        <p style="padding:16px 11px;font-size:17px;line-height:1.7;">Device connectivity information for the selected site will be displayed in this section.</p>
+
+      <!-- Summary Cards -->
+      <section
+        class="dcard stat g-green"
+        style="left:325px;top:160px;width:520px;height:135px"
+      >
+        <h3>Connected</h3>
+        <div class="big" id="cConnected">—</div>
+        <p>Smart Hardhat Connected: Online</p>
+
+        <svg class="stat-ico" viewBox="0 0 24 24">
+          <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/>
+        </svg>
       </section>
+
+      <section
+        class="dcard stat g-red"
+        style="left:900px;top:160px;width:520px;height:135px"
+      >
+        <h3>Disconnected</h3>
+        <div class="big" id="cDisconnected">—</div>
+        <p>Smart Hardhat Disconnected: Offline</p>
+
+        <svg class="stat-ico" viewBox="0 0 24 24">
+          <path d="M6 2h9l5 5v15H6zM8 12h9v2H8zm0 4h9v2H8z"/>
+        </svg>
+      </section>
+
+      <!-- Status Table -->
+      <section
+        class="dcard g-panel"
+        style="left:325px;top:325px;width:1095px;height:300px"
+      >
+        <h3>Device Connectivity Table</h3>
+        <div class="tbl" id="devStatusTable"></div>
+      </section>
+
+      <!-- Trend Chart -->
+      <section
+        class="dcard g-panel"
+        style="left:325px;top:655px;width:1095px;height:337px"
+      >
+        <h3>Device Connectivity Trend</h3>
+
+        <div class="trend-legend">
+          <span class="pill n">Online</span>
+          <span class="pill d">Offline</span>
+        </div>
+
+        <div class="trend" id="devTrend"></div>
+      </section>
+
     </div>
+
+    <!-- Shared Dashboard Layout -->
     <script src="../dashboardLayout.js"></script>
+
+    <!-- Device Connectivity Backend Integration -->
+    <script src="../deviceConnectivity.js"></script>
   </body>
 </html>
