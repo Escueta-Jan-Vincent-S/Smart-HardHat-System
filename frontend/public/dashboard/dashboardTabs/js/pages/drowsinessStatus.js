@@ -1,6 +1,6 @@
 
  // ========================================
- // SMSYS DASHBOARD - DROWSINESS STATUS
+ // SMSYS DASHBOARD - ZONE LOCALIZATION
  // ========================================
 
 import {
@@ -28,17 +28,17 @@ import {
 // PAGE CHECK
 // ========================================
 
-if (currentPage === "drowsy") {
-    initializeDrowsinessStatus();
+if (currentPage === "zone") {
+    initializeZoneLocalization();
 }
 
 // ========================================
 // STATE
 // ========================================
 
-let currentDrowsinessSiteId = getCurrentSiteId();
-let latestDrowsinessRequestId = 0;
-let drowsinessRefreshInterval = null;
+let currentZoneSiteId = getCurrentSiteId();
+let latestZoneRequestId = 0;
+let zoneRefreshInterval = null;
 
 // ========================================
 // ELEMENT HELPERS
@@ -53,75 +53,62 @@ function setText(id, value) {
 }
 
 function showTableMessage(message) {
-    const table = $("drTable");
+    const table = $("zoneStatusTable");
 
     if (!table) return;
 
-    table.innerHTML = `
+    const row = `
         <tr>
-            <td colspan="5">${escapeHTML(message)}</td>
+            <td colspan="6">${escapeHTML(message)}</td>
         </tr>
     `;
+
+    if (table.tagName === "TBODY") {
+        table.innerHTML = row;
+    } else {
+        table.innerHTML = `
+            <table>
+                <tbody>
+                    ${row}
+                </tbody>
+            </table>
+        `;
+    }
 }
 
 // ========================================
 // SUMMARY
 // ========================================
 
-function formatPercentage(value) {
-    if (value === null || value === undefined) {
-        return "—";
-    }
-
-    const number = Number(value);
-
-    if (!Number.isFinite(number)) {
-        return "—";
-    }
-
-    return `${number.toFixed(1).replace(/\.0$/, "")}%`;
-}
-
-function renderDrowsinessSummary(summary = {}) {
+function renderZoneSummary(summary = {}) {
     setText(
-        "dNormal",
-        formatPercentage(summary.normal_percent)
+        "zLocalized",
+        summary.localized_workers ?? 0
     );
 
     setText(
-        "dDrowsy",
-        formatPercentage(summary.drowsy_percent)
-    );
-
-    setText(
-        "dUnmon",
-        formatPercentage(summary.unmonitored_percent)
+        "zUnlocalized",
+        summary.unlocalized_workers ?? 0
     );
 }
 
 // ========================================
-// STATUS DISPLAY
+// LOCATION STATUS
 // ========================================
 
-function getStatusClass(status) {
+function getLocationStatusClass(status) {
     const normalized = String(status || "")
         .toLowerCase()
         .trim();
 
-    if (normalized === "normal") {
-        return "n";
-    }
-
-    if (normalized === "drowsy") {
-        return "d";
-    }
-
-    return "u";
+    return normalized === "localized"
+        ? "localized"
+        : "unlocalized";
 }
 
-function renderStatusPill(status) {
-    const statusText = status || "Unmonitored";
-    const statusClass = getStatusClass(statusText);
+function renderLocationStatus(status) {
+    const statusText = status || "Unlocalized";
+    const statusClass = getLocationStatusClass(statusText);
 
     return `
         <span class="pill ${statusClass}">
@@ -131,76 +118,108 @@ function renderStatusPill(status) {
 }
 
 // ========================================
-// DROWSINESS TABLE
+// WORKER LOCATION TABLE
 // ========================================
 
-function renderDrowsinessTable(records = []) {
-    const table = $("drTable");
+function renderZoneTable(records = []) {
+    const table = $("zoneStatusTable");
 
     if (!table) return;
 
     if (!Array.isArray(records) || records.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="5">No drowsiness records available.</td>
-            </tr>
-        `;
-
+        showTableMessage("No registered workers available.");
         return;
     }
 
-    table.innerHTML = records.map((record) => {
-        const deviceId = escapeHTML(record.device_id || "—");
+    const rows = records.map((record) => {
         const workerName = escapeHTML(
-            record.worker_name || "Unassigned"
+            record.worker_name || "Unknown Worker"
         );
 
-        const status = renderStatusPill(record.status);
+        const workerCode = escapeHTML(
+            record.worker_code || "—"
+        );
+
+        const deviceId = escapeHTML(
+            record.device_id || "Unassigned"
+        );
+
+        const floor = escapeHTML(
+            record.floor || "—"
+        );
+
+        const zone = escapeHTML(
+            record.zone || "—"
+        );
+
+        const status = renderLocationStatus(
+            record.location_status
+        );
 
         const capturedAt = escapeHTML(
             formatDateTime(record.captured_at)
         );
 
-        const duration = record.duration_ms == null
-            ? "—"
-            : `${Number(record.duration_ms).toLocaleString()} ms`;
-
         return `
             <tr>
-                <td>${deviceId}</td>
                 <td>${workerName}</td>
+                <td>${workerCode}</td>
+                <td>${deviceId}</td>
+                <td>${floor}</td>
+                <td>${zone}</td>
                 <td>${status}</td>
                 <td>${capturedAt}</td>
-                <td>${escapeHTML(duration)}</td>
             </tr>
         `;
     }).join("");
+
+    if (table.tagName === "TBODY") {
+        table.innerHTML = rows;
+    } else {
+        table.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Worker Name</th>
+                        <th>Worker Code</th>
+                        <th>Device ID</th>
+                        <th>Floor</th>
+                        <th>Zone</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        `;
+    }
 }
 
 // ========================================
-// HOURLY TREND CHART
+// LOCALIZATION TREND
 // ========================================
 
-function renderDrowsinessTrend(trend = []) {
-    const chart = $("trend");
+function renderZoneTrend(trend = []) {
+    const chart = $("zoneTrend");
 
     if (!chart) return;
 
     if (!Array.isArray(trend) || trend.length === 0) {
-        chart.innerHTML = "<p>No trend data available.</p>";
+        chart.innerHTML = `
+            <p>No localization trend data available.</p>
+        `;
         return;
     }
 
     const maxValue = Math.max(
         1,
-        ...trend.flatMap((item) => [
-            Number(item.normal) || 0,
-            Number(item.drowsy) || 0,
-            Number(item.unmonitored) || 0
-        ])
+        ...trend.map((item) =>
+            Number(item.localized_count) || 0
+        )
     );
-
-    const chartMaximum = Math.ceil(maxValue);
 
     chart.innerHTML = `
         <div class="ylab">
@@ -211,33 +230,35 @@ function renderDrowsinessTrend(trend = []) {
 
         <div class="cols">
             ${trend.map((item) => {
-                const normal = Number(item.normal) || 0;
-                const drowsy = Number(item.drowsy) || 0;
-                const unmonitored = Number(item.unmonitored) || 0;
+                const count = Number(item.localized_count) || 0;
+
+                const height = Math.min(
+                    100,
+                    (count / maxValue) * 100
+                );
+
+                const date = item.date
+                    ? new Date(`${item.date}T00:00:00`)
+                    : null;
+
+                const label = date && !Number.isNaN(date.getTime())
+                    ? date.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric"
+                    })
+                    : "—";
 
                 return `
                     <div class="col">
                         <div class="bars">
                             <i
-                                class="bar n"
-                                style="height:${(normal / chartMaximum) * 100}%"
-                                title="Normal: ${normal}"
-                            ></i>
-
-                            <i
-                                class="bar d"
-                                style="height:${(drowsy / chartMaximum) * 100}%"
-                                title="Drowsy: ${drowsy}"
-                            ></i>
-
-                            <i
-                                class="bar u"
-                                style="height:${(unmonitored / chartMaximum) * 100}%"
-                                title="Unmonitored: ${unmonitored}"
+                                class="bar localized"
+                                style="height:${height}%"
+                                title="Localized workers: ${count}"
                             ></i>
                         </div>
 
-                        <span>${escapeHTML(item.hour || "—")}</span>
+                        <span>${escapeHTML(label)}</span>
                     </div>
                 `;
             }).join("")}
@@ -249,30 +270,30 @@ function renderDrowsinessTrend(trend = []) {
 // RENDER PAGE
 // ========================================
 
-function renderDrowsinessStatus(data) {
-    renderDrowsinessSummary(data.summary || {});
-    renderDrowsinessTable(data.records || []);
-    renderDrowsinessTrend(data.trend || []);
+function renderZoneLocalization(data) {
+    renderZoneSummary(data.summary || {});
+    renderZoneTable(data.records || []);
+    renderZoneTrend(data.trend || []);
 }
 
 // ========================================
 // LOAD API DATA
 // ========================================
 
-async function loadDrowsinessStatus() {
+async function loadZoneLocalization() {
     if (!sessionStorage.getItem("smsys_access_token")) {
         redirectToSiteAccess();
         return;
     }
 
-    const requestId = ++latestDrowsinessRequestId;
+    const requestId = ++latestZoneRequestId;
 
     const selectedSiteId =
-        currentDrowsinessSiteId ||
+        currentZoneSiteId ||
         getCurrentSiteId();
 
     const endpoint = new URL(
-        `${API_BASE}/api/dashboard/drowsiness-status`
+        `${API_BASE}/api/dashboard/zone-localization`
     );
 
     if (selectedSiteId) {
@@ -296,13 +317,13 @@ async function loadDrowsinessStatus() {
 
         const data = await response.json();
 
-        if (requestId !== latestDrowsinessRequestId) {
+        if (requestId !== latestZoneRequestId) {
             return;
         }
 
         if (!response.ok || !data.success) {
             const error = new Error(
-                data.message || "Could not load drowsiness status."
+                data.message || "Could not load zone localization."
             );
 
             error.status = response.status;
@@ -310,56 +331,52 @@ async function loadDrowsinessStatus() {
         }
 
         if (data.site && data.site.id != null) {
-            currentDrowsinessSiteId = String(data.site.id);
+            currentZoneSiteId = String(data.site.id);
 
-            setCurrentSiteId(currentDrowsinessSiteId);
+            setCurrentSiteId(currentZoneSiteId);
         }
 
         if (!data.site) {
-            renderDrowsinessStatus({
-                summary: {},
+            renderZoneLocalization({
+                summary: {
+                    localized_workers: 0,
+                    unlocalized_workers: 0
+                },
                 records: [],
-                trend: data.trend || []
+                trend: []
             });
-
-            setText("dNormal", "0%");
-            setText("dDrowsy", "0%");
-            setText("dUnmon", "0%");
 
             showTableMessage("No site available.");
 
             return;
         }
 
-        renderDrowsinessStatus(data);
+        renderZoneLocalization(data);
 
     } catch (error) {
-        if (requestId !== latestDrowsinessRequestId) {
+        if (requestId !== latestZoneRequestId) {
             return;
         }
 
         console.error(
-            "SMSYS drowsiness status API error:",
+            "SMSYS zone localization API error:",
             error
         );
 
-        setText("dNormal", "—");
-        setText("dDrowsy", "—");
-        setText("dUnmon", "—");
+        setText("zLocalized", "—");
+        setText("zUnlocalized", "—");
 
         showTableMessage(
             error.status === 403
                 ? "You do not have permission to access this site."
-                : "Unable to load drowsiness status. Check that Flask is running."
+                : "Unable to load worker localization. Check that Flask is running."
         );
 
-        const chart = $("trend");
+        const chart = $("zoneTrend");
 
         if (chart) {
             chart.innerHTML = `
-                <p>
-                    Unable to load drowsiness trend.
-                </p>
+                <p>Unable to load localization trend.</p>
             `;
         }
     }
@@ -369,7 +386,7 @@ async function loadDrowsinessStatus() {
 // SITE CHANGE LISTENER
 // ========================================
 
-function initializeDrowsinessSiteListener() {
+function initializeZoneSiteListener() {
     window.addEventListener("smsys:site-change", (event) => {
         const siteId =
             event.detail?.siteId ||
@@ -378,11 +395,11 @@ function initializeDrowsinessSiteListener() {
 
         if (!siteId) return;
 
-        currentDrowsinessSiteId = String(siteId);
+        currentZoneSiteId = String(siteId);
 
-        setCurrentSiteId(currentDrowsinessSiteId);
+        setCurrentSiteId(currentZoneSiteId);
 
-        loadDrowsinessStatus();
+        loadZoneLocalization();
     });
 }
 
@@ -390,23 +407,23 @@ function initializeDrowsinessSiteListener() {
 // INITIALIZATION
 // ========================================
 
-function initializeDrowsinessStatus() {
-    loadDrowsinessStatus();
+function initializeZoneLocalization() {
+    loadZoneLocalization();
 
-    initializeDrowsinessSiteListener();
+    initializeZoneSiteListener();
 
-    if (drowsinessRefreshInterval) {
-        window.clearInterval(drowsinessRefreshInterval);
+    if (zoneRefreshInterval) {
+        window.clearInterval(zoneRefreshInterval);
     }
 
-    drowsinessRefreshInterval = window.setInterval(
-        loadDrowsinessStatus,
+    zoneRefreshInterval = window.setInterval(
+        loadZoneLocalization,
         5000
     );
 
     window.addEventListener("beforeunload", () => {
-        if (drowsinessRefreshInterval) {
-            window.clearInterval(drowsinessRefreshInterval);
+        if (zoneRefreshInterval) {
+            window.clearInterval(zoneRefreshInterval);
         }
     });
 }

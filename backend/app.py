@@ -1,3 +1,4 @@
+
 from flask import Flask
 from flask_cors import CORS
 
@@ -55,6 +56,8 @@ try:
     from .api.device_connectivity_api import register_device_connectivity_api
     from .api.alerts_history_api import register_alerts_history_api
     from .api.worker_api import register_worker_api
+    from .api.zone_localization_api import register_zone_localization_api
+
 except ImportError:
     from api.system_api import register_system_api
     from api.site_api import register_site_api
@@ -65,6 +68,7 @@ except ImportError:
     from api.device_connectivity_api import register_device_connectivity_api
     from api.alerts_history_api import register_alerts_history_api
     from api.worker_api import register_worker_api
+    from api.zone_localization_api import register_zone_localization_api
 
 
 # ============================================================
@@ -119,6 +123,9 @@ register_worker_api(
     normalized_status=normalized_status,
 )
 
+register_zone_localization_api(app)
+
+
 print("\n========== REGISTERED API ROUTES ==========")
 
 for rule in app.url_map.iter_rules():
@@ -126,13 +133,16 @@ for rule in app.url_map.iter_rules():
 
 print("===========================================\n")
 
+
 # ============================================================
 # START BACKEND
 # ============================================================
 
 if __name__ == "__main__":
     initialize_database()
+
     print("Starting SMSYS Backend...")
+
     app.run(
         host="127.0.0.1",
         port=5000,

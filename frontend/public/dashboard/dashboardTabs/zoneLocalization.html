@@ -1,20 +1,78 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SMSYS - Zone Localization</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
     <link rel="stylesheet" href="../dashboard.css" />
   </head>
+
   <body data-active="zone" data-navset="dashboard">
     <div id="app">
-      <h1 class="dash-title">Zone Localization</h1>
-      <section class="dcard g-panel" style="left:325px;top:160px;width:1095px;height:210px">
-        <h3>Zone Details</h3>
-        <p style="padding:16px 11px;font-size:17px;line-height:1.7;">Zone localization information for the selected site will be displayed in this section.</p>
+
+      <h1 class="dash-title">Worker Localization</h1>
+
+      <!-- Summary Cards -->
+      <section
+        class="dcard stat g-green"
+        style="left:325px;top:160px;width:520px;height:135px"
+      >
+        <h3>Localized</h3>
+        <div class="big" id="zLocalized">—</div>
+        <p>Workers with Valid Location</p>
+
+        <svg class="stat-ico" viewBox="0 0 24 24">
+          <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/>
+        </svg>
       </section>
+
+      <section
+        class="dcard stat g-red"
+        style="left:900px;top:160px;width:520px;height:135px"
+      >
+        <h3>Unlocalized</h3>
+        <div class="big" id="zUnlocalized">—</div>
+        <p>Workers with No Valid Location</p>
+
+        <svg class="stat-ico" viewBox="0 0 24 24">
+          <path d="M6 2h9l5 5v15H6zM8 12h9v2H8zm0 4h9v2H8z"/>
+        </svg>
+      </section>
+
+      <!-- Status Table -->
+      <section
+        class="dcard g-panel"
+        style="left:325px;top:325px;width:1095px;height:300px"
+      >
+        <h3>Zone Localization Table</h3>
+        <div class="tbl" id="zoneStatusTable"></div>
+      </section>
+
+      <!-- Trend Chart -->
+      <section
+        class="dcard g-panel"
+        style="left:325px;top:655px;width:1095px;height:337px"
+      >
+        <h3>Localization Trend</h3>
+
+        <div class="trend-legend">
+          <span class="pill n">Localized</span>
+          <span class="pill d">Unlocalized</span>
+        </div>
+
+        <div class="trend" id="zoneTrend"></div>
+      </section>
+
     </div>
+
+    <!-- Shared Dashboard Layout -->
     <script type="module" src="js/dashboardLayout.js"></script>
+
   </body>
 </html>
