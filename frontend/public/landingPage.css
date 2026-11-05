@@ -1,0 +1,288 @@
+/* SMSYS landing page. Uses the same fonts, colors, and assets as dashboard.css. */
+
+/* 1. Variables and base */
+:root {
+  --gold: #feaf1c;
+  --gold-light: #ffbc2d;
+  --text: #d0d0d0;
+  --border: rgba(255, 255, 255, 0.4);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  background:
+    linear-gradient(rgba(1, 9, 23, 0.55), rgba(1, 9, 23, 0.55)),
+    url("./assets/icons/1.landing_bg.png") center bottom / cover no-repeat,
+    #010917;
+}
+
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+svg, img { display: block; }
+
+/* 2. Fixed 1440x1024 canvas, scaled to fit the window (same as dashboard.css) */
+.page {
+  --scale: min(tan(atan2(100vw, 1440px)), tan(atan2(100vh, 1024px)));
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 1024px;
+  padding: 30px 80px 0;
+  transform-origin: top left;
+  translate: calc((100vw - 1440px * var(--scale)) / 2) calc((100vh - 1024px * var(--scale)) / 2);
+  scale: var(--scale);
+}
+
+/* 3. Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand__logo {
+  width: 45px;
+  height: 45px;
+}
+
+.brand__name {
+  font-size: 25px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.btn {
+  display: grid;
+  place-items: center;
+  height: 46px;
+  padding: 0 32px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  background: var(--gold);
+  border-radius: 23px;
+}
+
+.btn:hover { filter: brightness(1.08); }
+
+/* 4. Hero */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 520px;
+  align-items: center;
+  gap: 80px;
+  height: 400px;
+  margin-top: 40px;
+}
+
+.hero__tag {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 24px;
+  padding: 10px 28px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  border: 1px solid var(--gold);
+}
+
+.hero__tag::before,
+.hero__tag::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+}
+
+.hero__tag::before { top: -5px; left: -5px; }
+.hero__tag::after  { right: -5px; bottom: -5px; }
+
+.hero__title {
+  margin-bottom: 20px;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.hero__text {
+  max-width: 600px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* 5. Hero visual */
+.showcase {
+  position: relative;
+  height: 100%;
+}
+
+.showcase__blob {
+  position: absolute;
+  top: 0;
+  left: 60px;
+  display: grid;
+  place-items: center;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(0deg, #011636, #002968);
+  border: 1px solid var(--border);
+  border-radius: 60% 40% 55% 45% / 55% 60% 40% 45%;
+  box-shadow: 0 0 80px rgba(254, 175, 28, 0.15);
+}
+
+.showcase__logo {
+  width: 220px;
+  height: 220px;
+}
+
+.showcase__pill {
+  position: absolute;
+  padding: 8px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  background: #fff;
+  border-radius: 20px;
+}
+
+.showcase__pill--top   { top: 60px; left: 20px; }
+.showcase__pill--left  { bottom: 50px; left: 0; }
+.showcase__pill--right { right: 10px; bottom: 90px; }
+
+/* 6. Ticker strip */
+.ticker {
+  margin: 50px -80px 0;
+  background: var(--gold);
+}
+
+.ticker__list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 60px;
+}
+
+.ticker__item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+
+.ticker__item::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #000;
+  transform: rotate(45deg);
+}
+
+/* 7. Features */
+.features { margin-top: 50px; }
+
+.features__header { margin-bottom: 24px; }
+
+.features__label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.features__label::before {
+  content: "";
+  width: 28px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 3px;
+}
+
+.features__title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.feature-card {
+  padding: 24px 26px;
+  background: linear-gradient(0deg, #011636, #002968);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.feature-card__badge {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  background: rgba(254, 175, 28, 0.15);
+  border-radius: 50%;
+}
+
+.feature-card__icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--gold);
+}
+
+.feature-card__title {
+  margin-bottom: 6px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.feature-card__text {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* 8. Footer */
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 20px;
+  left: 0;
+  font-weight: 300;
+  text-align: center;
+}

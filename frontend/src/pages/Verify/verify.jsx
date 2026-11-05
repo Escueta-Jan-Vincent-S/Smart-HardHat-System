@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 
 import bgImage from "../../assets/images/landing-page-background.jpg";
@@ -49,6 +50,10 @@ function Verify() {
 
   const returnToSite = () => {
     navigate("/site-access", { replace: true });
+  };
+
+  const goToDashboardLogin = () => {
+    navigate("/dashboard-login", { replace: true });
   };
 
   return (
@@ -140,6 +145,25 @@ function Verify() {
                 onClick={returnToSite}
               >
                 ✓ CONFIRM
+              </button>
+
+              <button
+                type="button"
+                onClick={goToDashboardLogin}
+                style={{
+                  width: "100%",
+                  marginTop: "12px",
+                  padding: "14px",
+                  border: "none",
+                  borderRadius: "8px",
+                  background: "#d99a24",
+                  color: "#ffffff",
+                  fontWeight: "700",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                GO TO DASHBOARD →
               </button>
             </>
           ) : (

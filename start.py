@@ -1,3 +1,4 @@
+
 import os
 import shutil
 import socket
@@ -15,8 +16,6 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
 BACKEND_DIR = os.path.join(PROJECT_ROOT, "backend")
 
-# Bind Vite explicitly to IPv4 so the readiness check and browser URLs
-# connect to the exact same address on Windows.
 FRONTEND_HOST = "127.0.0.1"
 FRONTEND_PORT = 5173
 
@@ -24,9 +23,7 @@ BACKEND_HOST = "127.0.0.1"
 BACKEND_PORT = 5000
 
 FRONTEND_BASE_URL = f"http://{FRONTEND_HOST}:{FRONTEND_PORT}"
-SITE_CREATION_URL = f"{FRONTEND_BASE_URL}/site-access"
-DASHBOARD_URL = f"{FRONTEND_BASE_URL}/dashboard-login"
-WORKER_URL = f"{FRONTEND_BASE_URL}/worker-login"
+LANDING_PAGE_URL = f"{FRONTEND_BASE_URL}/landingPage.html"
 
 
 # =========================
@@ -55,10 +52,12 @@ def check_project_files():
 
 def check_npm():
     npm_command = "npm.cmd" if os.name == "nt" else "npm"
+
     if shutil.which(npm_command) is None:
         print(f"[ERROR] '{npm_command}' not found on PATH.")
         print("Install Node.js and npm first.")
         sys.exit(1)
+
     return npm_command
 
 
@@ -72,7 +71,10 @@ def wait_for_server(host, port, name, process=None, timeout=60):
 
     while time.monotonic() < deadline:
         if process is not None and process.poll() is not None:
-            print(f"[ERROR] {name} process stopped before becoming ready.", flush=True)
+            print(
+                f"[ERROR] {name} process stopped before becoming ready.",
+                flush=True,
+            )
             return False
 
         try:
@@ -82,7 +84,10 @@ def wait_for_server(host, port, name, process=None, timeout=60):
         except OSError:
             time.sleep(0.3)
 
-    print(f"[WARNING] {name} did not respond within {timeout} seconds.", flush=True)
+    print(
+        f"[WARNING] {name} did not respond within {timeout} seconds.",
+        flush=True,
+    )
     return False
 
 
@@ -91,7 +96,6 @@ def wait_for_server(host, port, name, process=None, timeout=60):
 # =========================
 
 def find_browser_executable():
-    """Find an installed browser that can receive all three URLs at once."""
     candidates = []
 
     if os.name == "nt":
@@ -103,10 +107,44 @@ def find_browser_executable():
 
         for root in filter(None, roots):
             candidates.extend([
-                (os.path.join(root, "Google", "Chrome", "Application", "chrome.exe"), "chromium"),
-                (os.path.join(root, "Microsoft", "Edge", "Application", "msedge.exe"), "chromium"),
-                (os.path.join(root, "BraveSoftware", "Brave-Browser", "Application", "brave.exe"), "chromium"),
-                (os.path.join(root, "Mozilla Firefox", "firefox.exe"), "firefox"),
+                (
+                    os.path.join(
+                        root,
+                        "Google",
+                        "Chrome",
+                        "Application",
+                        "chrome.exe",
+                    ),
+                    "chromium",
+                ),
+                (
+                    os.path.join(
+                        root,
+                        "Microsoft",
+                        "Edge",
+                        "Application",
+                        "msedge.exe",
+                    ),
+                    "chromium",
+                ),
+                (
+                    os.path.join(
+                        root,
+                        "BraveSoftware",
+                        "Brave-Browser",
+                        "Application",
+                        "brave.exe",
+                    ),
+                    "chromium",
+                ),
+                (
+                    os.path.join(
+                        root,
+                        "Mozilla Firefox",
+                        "firefox.exe",
+                    ),
+                    "firefox",
+                ),
             ])
 
         for command, kind in [
@@ -116,8 +154,10 @@ def find_browser_executable():
             ("firefox.exe", "firefox"),
         ]:
             located = shutil.which(command)
+
             if located:
                 candidates.append((located, kind))
+
     else:
         for command, kind in [
             ("google-chrome", "chromium"),
@@ -128,14 +168,18 @@ def find_browser_executable():
             ("firefox", "firefox"),
         ]:
             located = shutil.which(command)
+
             if located:
                 candidates.append((located, kind))
 
     seen = set()
+
     for path, kind in candidates:
         if path in seen:
             continue
+
         seen.add(path)
+
         if os.path.isfile(path) or shutil.which(path):
             return path, kind
 
@@ -143,21 +187,13 @@ def find_browser_executable():
 
 
 # =========================
-# OPEN WEBSITE TABS
+# OPEN LANDING PAGE
 # =========================
 
-def open_website_tabs():
-    websites = [
-        ("Site Creation", SITE_CREATION_URL),
-        ("Dashboard", DASHBOARD_URL),
-        ("Worker", WORKER_URL),
-    ]
-    urls = [url for _, url in websites]
-
+def open_landing_page():
     print("", flush=True)
-    print("Opening SMSYS websites:", flush=True)
-    for name, url in websites:
-        print(f"  {name}: {url}", flush=True)
+    print("Opening SMSYS Landing Page:", flush=True)
+    print(f"  Landing Page: {LANDING_PAGE_URL}", flush=True)
 
     browser_path, browser_kind = find_browser_executable()
 
@@ -165,12 +201,15 @@ def open_website_tabs():
         if browser_kind == "firefox":
             command = [
                 browser_path,
-                "-new-window", urls[0],
-                "-new-tab", urls[1],
-                "-new-tab", urls[2],
+                "-new-window",
+                LANDING_PAGE_URL,
             ]
         else:
-            command = [browser_path, "--new-window", *urls]
+            command = [
+                browser_path,
+                "--new-window",
+                LANDING_PAGE_URL,
+            ]
 
         try:
             subprocess.Popen(
@@ -179,25 +218,38 @@ def open_website_tabs():
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            print("[OK] Sent all three pages to the browser in one launch.", flush=True)
+
+            print("[OK] Landing Page opened in a new browser window.", flush=True)
             return True
+
         except OSError as error:
-            print(f"[WARNING] Could not launch the detected browser: {error}", flush=True)
+            print(
+                f"[WARNING] Could not launch the detected browser: {error}",
+                flush=True,
+            )
 
     print("[INFO] Trying the system default browser...", flush=True)
-    opened_any = False
-    for _, url in websites:
-        try:
-            opened = webbrowser.open_new_tab(url)
-            opened_any = opened_any or bool(opened)
-        except webbrowser.Error as error:
-            print(f"[WARNING] Could not open {url}: {error}", flush=True)
-        time.sleep(0.5)
 
-    if not opened_any:
-        print("[WARNING] Automatic browser opening failed. Open the URLs above manually.", flush=True)
+    try:
+        opened = webbrowser.open(LANDING_PAGE_URL, new=1)
 
-    return opened_any
+        if opened:
+            print("[OK] Landing Page opened in the default browser.", flush=True)
+            return True
+
+    except webbrowser.Error as error:
+        print(
+            f"[WARNING] Could not open the Landing Page: {error}",
+            flush=True,
+        )
+
+    print(
+        "[WARNING] Automatic browser opening failed.",
+        flush=True,
+    )
+    print(f"Open this URL manually: {LANDING_PAGE_URL}", flush=True)
+
+    return False
 
 
 # =========================
@@ -209,11 +261,18 @@ def stop_process(process, name):
         return
 
     print(f"Stopping {name}...", flush=True)
+
     process.terminate()
+
     try:
         process.wait(timeout=5)
+
     except subprocess.TimeoutExpired:
-        print(f"{name} did not stop in time. Forcing shutdown.", flush=True)
+        print(
+            f"{name} did not stop in time. Forcing shutdown.",
+            flush=True,
+        )
+
         process.kill()
         process.wait(timeout=5)
 
@@ -236,6 +295,7 @@ def main():
 
     try:
         print("Starting Flask backend...", flush=True)
+
         backend = subprocess.Popen(
             [sys.executable, "app.py"],
             cwd=BACKEND_DIR,
@@ -251,15 +311,17 @@ def main():
 
         print("", flush=True)
         print("Starting React frontend...", flush=True)
-        # Important: --host forces Vite to listen on the same IPv4 address
-        # checked above. Without this, Windows may bind Vite to localhost/IPv6
-        # while this script checks 127.0.0.1 and never reaches the browser step.
+
         frontend = subprocess.Popen(
             [
                 npm_command,
-                "run", "dev", "--",
-                "--host", FRONTEND_HOST,
-                "--port", str(FRONTEND_PORT),
+                "run",
+                "dev",
+                "--",
+                "--host",
+                FRONTEND_HOST,
+                "--port",
+                str(FRONTEND_PORT),
                 "--strictPort",
             ],
             cwd=FRONTEND_DIR,
@@ -277,28 +339,33 @@ def main():
         print("======================================", flush=True)
         print("SMSYS startup status", flush=True)
         print("======================================", flush=True)
+
         print(
-            f"Backend : {'READY' if backend_ready else 'NOT READY'} - http://{BACKEND_HOST}:{BACKEND_PORT}",
+            f"Backend : {'READY' if backend_ready else 'NOT READY'} "
+            f"- http://{BACKEND_HOST}:{BACKEND_PORT}",
             flush=True,
         )
+
         print(
-            f"Frontend: {'READY' if frontend_ready else 'NOT READY'} - {FRONTEND_BASE_URL}",
+            f"Frontend: {'READY' if frontend_ready else 'NOT READY'} "
+            f"- {FRONTEND_BASE_URL}",
             flush=True,
         )
 
         if frontend_ready:
             time.sleep(0.5)
-            open_website_tabs()
+            open_landing_page()
+
         else:
             print("", flush=True)
-            print("[WARNING] Frontend is not reachable, so browser tabs were not opened.", flush=True)
-            print("Try these URLs after checking that Vite started successfully:", flush=True)
-            for name, url in [
-                ("Site Creation", SITE_CREATION_URL),
-                ("Dashboard", DASHBOARD_URL),
-                ("Worker", WORKER_URL),
-            ]:
-                print(f"  {name}: {url}", flush=True)
+            print(
+                "[WARNING] Frontend is not reachable, so the browser was not opened.",
+                flush=True,
+            )
+            print(
+                f"Try this URL after checking Vite: {LANDING_PAGE_URL}",
+                flush=True,
+            )
 
         print("", flush=True)
         print("Press Ctrl+C to stop SMSYS.", flush=True)
@@ -306,12 +373,18 @@ def main():
         while True:
             if backend.poll() is not None:
                 print("", flush=True)
-                print("[ERROR] Flask backend stopped unexpectedly.", flush=True)
+                print(
+                    "[ERROR] Flask backend stopped unexpectedly.",
+                    flush=True,
+                )
                 break
 
             if frontend.poll() is not None:
                 print("", flush=True)
-                print("[ERROR] React frontend stopped unexpectedly.", flush=True)
+                print(
+                    "[ERROR] React frontend stopped unexpectedly.",
+                    flush=True,
+                )
                 break
 
             time.sleep(1)
@@ -323,8 +396,10 @@ def main():
     finally:
         print("", flush=True)
         print("Shutting down SMSYS...", flush=True)
+
         stop_process(frontend, "React Frontend")
         stop_process(backend, "Flask Backend")
+
         print("", flush=True)
         print("SMSYS stopped.", flush=True)
 

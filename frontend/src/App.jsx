@@ -1,5 +1,6 @@
+
 import { useEffect } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Site from "./pages/Site/Site";
 import CreateSite from "./pages/CreateSite/CreateSite";
@@ -29,7 +30,7 @@ function RouteTitle() {
     } else if (path === "/worker-login") {
       document.title = "Worker";
     } else {
-      document.title = "SMSYS";
+      document.title = "SMSYS | Smart Monitoring System";
     }
   }, [location.pathname]);
 
@@ -42,57 +43,47 @@ function App() {
       <RouteTitle />
 
       <Routes>
+        {/* LANDING PAGE */}
         <Route
           path="/"
-          element={<Navigate to="/site-access" replace />}
+          element={
+            <iframe
+              src="/landingPage.html"
+              title="SMSYS Landing Page"
+              style={{
+                width: "100%",
+                height: "100vh",
+                border: "none",
+                display: "block",
+              }}
+            />
+          }
         />
 
         {/* SITE ACCESS */}
-        <Route
-          path="/site-access"
-          element={<Site />}
-        />
+        <Route path="/site-access" element={<Site />} />
 
         {/* CREATE NEW SITE */}
-        <Route
-          path="/create-site"
-          element={<CreateSite />}
-        />
+        <Route path="/create-site" element={<CreateSite />} />
 
-        {/* CREATE SITE FOR EXISTING SUPERVISOR */}
+        {/* EXISTING SUPERVISOR */}
         <Route
           path="/create-site-existing"
           element={<CreateSiteExisiting />}
         />
 
         {/* SITE CREATED */}
-        <Route
-          path="/site-created"
-          element={<SiteCreated />}
-        />
+        <Route path="/site-created" element={<SiteCreated />} />
 
         {/* VERIFICATION */}
-        <Route
-          path="/verify"
-          element={<Verify />}
-        />
+        <Route path="/verify" element={<Verify />} />
 
         {/* DASHBOARD */}
-        <Route
-          path="/dashboard-login"
-          element={<DashboardLogin />}
-        />
+        <Route path="/dashboard-login" element={<DashboardLogin />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
-
-        {/* WORKER LOGIN */}
-        <Route
-          path="/worker-login"
-          element={<WorkerLogin />}
-        />
+        {/* WORKER */}
+        <Route path="/worker-login" element={<WorkerLogin />} />
       </Routes>
     </>
   );

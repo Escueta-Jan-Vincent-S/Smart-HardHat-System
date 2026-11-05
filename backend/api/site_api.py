@@ -1,4 +1,5 @@
-from datetime import datetime
+
+from datetime import datetime, timedelta
 import secrets
 
 from flask import jsonify, request
@@ -8,12 +9,14 @@ try:
     from ..utils.site_helpers import (
         generate_site_code,
         generate_supervisor_pin,
+        hash_access_token,
     )
 except ImportError:
     from database.connection import get_database
     from utils.site_helpers import (
         generate_site_code,
         generate_supervisor_pin,
+        hash_access_token,
     )
 
 
@@ -77,9 +80,11 @@ def register_site_api(app):
                     break
 
             supervisor_pin = generate_supervisor_pin()
-            created_at = datetime.now().astimezone().isoformat(
-                timespec="seconds"
-            )
+
+            issued_at = datetime.now().astimezone()
+            expires_at = issued_at + timedelta(hours=12)
+
+            created_at = issued_at.isoformat(timespec="seconds")
 
             cursor.execute(
                 """
@@ -119,6 +124,30 @@ def register_site_api(app):
                 ),
             )
 
+            supervisor_id = cursor.lastrowid
+
+            # Generate an authenticated supervisor session.
+            access_token = secrets.token_urlsafe(32)
+
+            cursor.execute(
+                """
+                INSERT INTO supervisor_sessions (
+                    token_hash,
+                    supervisor_id,
+                    site_id,
+                    created_at,
+                    expires_at
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    hash_access_token(access_token),
+                    supervisor_id,
+                    site_id,
+                    created_at,
+                    expires_at.isoformat(timespec="seconds"),
+                ),
+            )
+
             connection.commit()
 
             return jsonify({
@@ -136,6 +165,9 @@ def register_site_api(app):
                     "supervisor_pin": supervisor_pin,
                     "status": "Active",
                     "created_at": created_at,
+                    "access_token": access_token,
+                    "token_type": "Bearer",
+                    "expires_at": expires_at.isoformat(timespec="seconds"),
                 },
             }), 201
 
@@ -261,9 +293,10 @@ def register_site_api(app):
                 existing_supervisor["supervisor_pin"]
             ).strip()
 
-            created_at = datetime.now().astimezone().isoformat(
-                timespec="seconds"
-            )
+            issued_at = datetime.now().astimezone()
+            expires_at = issued_at + timedelta(hours=12)
+
+            created_at = issued_at.isoformat(timespec="seconds")
 
             cursor.execute(
                 """
@@ -303,6 +336,30 @@ def register_site_api(app):
                 ),
             )
 
+            supervisor_id = cursor.lastrowid
+
+            # Generate an authenticated session for the new site.
+            access_token = secrets.token_urlsafe(32)
+
+            cursor.execute(
+                """
+                INSERT INTO supervisor_sessions (
+                    token_hash,
+                    supervisor_id,
+                    site_id,
+                    created_at,
+                    expires_at
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    hash_access_token(access_token),
+                    supervisor_id,
+                    site_id,
+                    created_at,
+                    expires_at.isoformat(timespec="seconds"),
+                ),
+            )
+
             connection.commit()
 
             return jsonify({
@@ -322,6 +379,9 @@ def register_site_api(app):
                     "supervisor_pin": verified_pin,
                     "status": "Active",
                     "created_at": created_at,
+                    "access_token": access_token,
+                    "token_type": "Bearer",
+                    "expires_at": expires_at.isoformat(timespec="seconds"),
                 },
             }), 201
 
