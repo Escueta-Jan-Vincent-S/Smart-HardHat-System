@@ -1,76 +1,40 @@
+
 from datetime import datetime, timedelta
 
 from flask import jsonify, request
 
 
-def register_drowsiness_status_api(
+def register_device_connectivity_api(
     app,
     get_database,
     get_authenticated_supervisor,
     get_owned_sites,
     get_owned_site_by_id,
     serialize_site,
-    normalized_status,
+    display_device_status,
 ):
-    """Register the authenticated, site-scoped Drowsiness Status endpoint."""
-
-    def page_drowsiness_status(value):
-        status = normalized_status(value)
-
-        if status in {"normal", "awake", "not_drowsy", "alert"}:
-            return "Normal"
-
-        if "drowsy" in status or "drowsiness" in status:
-            return "Drowsy"
-
-        return "Unmonitored"
+    """Register the authenticated Device Connectivity endpoint."""
 
     def empty_trend():
         result = []
 
         for hour in range(8, 17):
-            hour_label = (
+            label = (
                 datetime(2000, 1, 1, hour=hour)
                 .strftime("%I:00 %p")
                 .lstrip("0")
             )
 
             result.append({
-                "hour": hour_label,
-                "normal": 0,
-                "drowsy": 0,
-                "unmonitored": 0,
+                "hour": label,
+                "online": None,
+                "offline": None,
             })
 
         return result
 
-    def make_summary(counts):
-        total = sum(counts.values())
-
-        return {
-            "total_devices": total,
-            "normal_devices": counts["Normal"],
-            "drowsy_devices": counts["Drowsy"],
-            "unmonitored_devices": counts["Unmonitored"],
-
-            "normal_percent": (
-                round((counts["Normal"] / total) * 100, 1)
-                if total else None
-            ),
-
-            "drowsy_percent": (
-                round((counts["Drowsy"] / total) * 100, 1)
-                if total else None
-            ),
-
-            "unmonitored_percent": (
-                round((counts["Unmonitored"] / total) * 100, 1)
-                if total else None
-            ),
-        }
-
-    @app.route("/api/dashboard/drowsiness-status", methods=["GET"])
-    def dashboard_drowsiness_status():
+    @app.route("/api/dashboard/device-connectivity", methods=["GET"])
+    def dashboard_device_connectivity():
         connection = get_database()
 
         try:
@@ -86,10 +50,10 @@ def register_drowsiness_status_api(
                     ),
                 }), 401
 
-            # Only return sites owned by the authenticated supervisor.
+            # Get only the authenticated supervisor's sites.
             sites = get_owned_sites(
                 connection,
-                supervisor["supervisor_name"]
+                supervisor["supervisor_name"],
             )
 
             sites_payload = [
@@ -99,7 +63,7 @@ def register_drowsiness_status_api(
 
             requested_site_id = request.args.get(
                 "site_id",
-                type=int
+                type=int,
             )
 
             if requested_site_id is not None:
@@ -116,51 +80,54 @@ def register_drowsiness_status_api(
                             "You do not have permission to access this site."
                         ),
                     }), 403
-
             else:
                 site_row = sites[0] if sites else None
 
-            empty_counts = {
-                "Normal": 0,
-                "Drowsy": 0,
-                "Unmonitored": 0,
+            empty_summary = {
+                "total_devices": 0,
+                "online_devices": 0,
+                "offline_devices": 0,
+                "unmonitored_devices": 0,
             }
 
-            # No site available.
             if site_row is None:
                 return jsonify({
                     "success": True,
                     "site": None,
                     "sites": sites_payload,
-                    "summary": make_summary(empty_counts),
+                    "summary": empty_summary,
                     "records": [],
                     "trend": empty_trend(),
+                    "trend_basis": (
+                        "A device is counted as online when it has "
+                        "at least one monitoring record during an hour."
+                    ),
                 }), 200
 
             site_id = site_row["id"]
 
-            # Get each registered hardhat and its latest monitoring record.
+            # Get registered hardhats and their latest monitoring record.
             device_rows = connection.execute(
                 """
                 SELECT
                     h.id AS hardhat_id,
                     h.device_code,
+                    h.status AS device_status,
                     h.last_seen,
 
                     COALESCE(
+                        w.full_name,
                         monitoring_worker.full_name,
-                        device_worker.full_name,
                         'Unassigned'
                     ) AS worker_name,
 
-                    m.drowsiness_status,
                     m.duration_ms,
                     m.captured_at
 
                 FROM smart_hardhats AS h
 
-                LEFT JOIN workers AS device_worker
-                    ON device_worker.id = h.worker_id
+                LEFT JOIN workers AS w
+                    ON w.id = h.worker_id
 
                 LEFT JOIN monitoring_records AS m
                     ON m.id = (
@@ -183,39 +150,53 @@ def register_drowsiness_status_api(
             ).fetchall()
 
             counts = {
-                "Normal": 0,
-                "Drowsy": 0,
+                "Online": 0,
+                "Offline": 0,
                 "Unmonitored": 0,
             }
 
             records = []
 
-            # Build the latest status table.
             for row in device_rows:
-                status = page_drowsiness_status(
-                    row["drowsiness_status"]
+                status = display_device_status(
+                    row["device_status"]
                 )
+
+                if status not in counts:
+                    status = "Unmonitored"
 
                 counts[status] += 1
 
                 records.append({
                     "device_id": row["device_code"],
-                    "worker_name": row["worker_name"] or "Unassigned",
-                    "status": status,
-                    "captured_at": (
-                        row["captured_at"] or row["last_seen"]
+                    "worker_name": (
+                        row["worker_name"] or "Unassigned"
                     ),
+                    "status": status,
+                    "last_seen": (
+                        row["last_seen"] or row["captured_at"]
+                    ),
+                    "last_monitoring": row["captured_at"],
                     "duration_ms": row["duration_ms"],
                 })
 
-            # Get today's monitoring records for the trend chart.
+            total_devices = len(records)
+
+            summary = {
+                "total_devices": total_devices,
+                "online_devices": counts["Online"],
+                "offline_devices": counts["Offline"],
+                "unmonitored_devices": counts["Unmonitored"],
+            }
+
+            # Get today's monitoring activity.
             now = datetime.now().astimezone()
 
             day_start = now.replace(
                 hour=0,
                 minute=0,
                 second=0,
-                microsecond=0
+                microsecond=0,
             )
 
             next_day_start = day_start + timedelta(days=1)
@@ -223,7 +204,7 @@ def register_drowsiness_status_api(
             trend_rows = connection.execute(
                 """
                 SELECT
-                    drowsiness_status,
+                    hardhat_id,
                     captured_at
                 FROM monitoring_records
                 WHERE site_id = ?
@@ -238,13 +219,9 @@ def register_drowsiness_status_api(
                 ),
             ).fetchall()
 
-            # Prepare hourly counts from 8 AM to 4 PM.
-            trend_counts = {
-                hour: {
-                    "Normal": 0,
-                    "Drowsy": 0,
-                    "Unmonitored": 0,
-                }
+            # Track unique devices that sent monitoring records per hour.
+            hourly_devices = {
+                hour: set()
                 for hour in range(8, 17)
             }
 
@@ -273,38 +250,55 @@ def register_drowsiness_status_api(
                 except ValueError:
                     continue
 
-                if captured_time.hour not in trend_counts:
-                    continue
+                hour = captured_time.hour
 
-                status = page_drowsiness_status(
-                    row["drowsiness_status"]
-                )
+                if hour in hourly_devices:
+                    hourly_devices[hour].add(row["hardhat_id"])
 
-                trend_counts[captured_time.hour][status] += 1
-
+            # Build hourly connectivity activity.
             trend = []
 
             for hour in range(8, 17):
-                hour_label = (
+                label = (
                     datetime(2000, 1, 1, hour=hour)
                     .strftime("%I:00 %p")
                     .lstrip("0")
                 )
 
+                # Do not display future hours as offline.
+                if hour > now.hour:
+                    online = None
+                    offline = None
+                else:
+                    online = min(
+                        len(hourly_devices[hour]),
+                        total_devices,
+                    )
+
+                    offline = max(
+                        total_devices - online,
+                        0,
+                    )
+
                 trend.append({
-                    "hour": hour_label,
-                    "normal": trend_counts[hour]["Normal"],
-                    "drowsy": trend_counts[hour]["Drowsy"],
-                    "unmonitored": trend_counts[hour]["Unmonitored"],
+                    "hour": label,
+                    "online": online,
+                    "offline": offline,
                 })
 
             response = jsonify({
                 "success": True,
                 "site": serialize_site(site_row),
                 "sites": sites_payload,
-                "summary": make_summary(counts),
+                "summary": summary,
                 "records": records,
                 "trend": trend,
+                "trend_basis": (
+                    "Hourly activity: a device counts as online if "
+                    "it has at least one monitoring record during "
+                    "that hour. Offline means no monitoring record "
+                    "was received during that hour."
+                ),
             })
 
             response.headers["Cache-Control"] = "private, no-store"
@@ -313,12 +307,12 @@ def register_drowsiness_status_api(
 
         except Exception:
             app.logger.exception(
-                "Drowsiness status request failed."
+                "Device connectivity request failed."
             )
 
             return jsonify({
                 "success": False,
-                "message": "Failed to load drowsiness status.",
+                "message": "Failed to load device connectivity.",
             }), 500
 
         finally:
