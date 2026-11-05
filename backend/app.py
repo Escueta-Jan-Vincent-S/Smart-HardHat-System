@@ -57,6 +57,7 @@ try:
     from .api.alerts_history_api import register_alerts_history_api
     from .api.worker_api import register_worker_api
     from .api.zone_localization_api import register_zone_localization_api
+    from .api.analytics_api import register_analytics_api
 
 except ImportError:
     from api.system_api import register_system_api
@@ -69,6 +70,7 @@ except ImportError:
     from api.alerts_history_api import register_alerts_history_api
     from api.worker_api import register_worker_api
     from api.zone_localization_api import register_zone_localization_api
+    from api.analytics_api import register_analytics_api
 
 
 # ============================================================
@@ -124,7 +126,12 @@ register_worker_api(
 )
 
 register_zone_localization_api(app)
+register_analytics_api(app)
 
+
+# ============================================================
+# DISPLAY REGISTERED API ROUTES
+# ============================================================
 
 print("\n========== REGISTERED API ROUTES ==========")
 
