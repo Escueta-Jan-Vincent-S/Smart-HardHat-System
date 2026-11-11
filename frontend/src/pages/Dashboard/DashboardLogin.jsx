@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../Site/Site.css";
+import "./DashboardLoginResponsive.css";
+
 import bgImage from "../../assets/images/landing-page-background.jpg";
 import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
 import API_BASE_URL from "../../config/api";
@@ -44,7 +46,6 @@ function DashboardLogin() {
 
     setIsVerifying(true);
 
-    // Do not allow an earlier browser session to authorize this login attempt.
     sessionStorage.removeItem("smsys_access_token");
     sessionStorage.removeItem("smsys_site_id");
     sessionStorage.removeItem("smsys_supervisor_name");
@@ -69,7 +70,9 @@ function DashboardLogin() {
       const data = await response.json();
 
       if (!response.ok || !data.success || !data.site?.access_token) {
-        setError(data.message || "Invalid dashboard login information.");
+        setError(
+          data.message || "Invalid dashboard login information."
+        );
         return;
       }
 
@@ -87,22 +90,15 @@ function DashboardLogin() {
 
   return (
     <div
-      className="site-page"
+      className="site-page dashboard-login-page"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="site-panel">
-        <header className="site-header">
+      <div className="site-panel dashboard-login-panel">
+        <header className="site-header dashboard-login-header">
           <img
             src={hardhatLogo}
             alt="SMSYS Smart Hardhat Logo"
             className="site-logo"
-            style={{
-              width: "72px",
-              height: "72px",
-              objectFit: "contain",
-              display: "block",
-              flexShrink: 0,
-            }}
           />
 
           <div className="site-brand">
@@ -111,15 +107,21 @@ function DashboardLogin() {
           </div>
         </header>
 
-        <div className="site-title">
+        <div className="site-title dashboard-login-title">
           <h1>Dashboard Page</h1>
           <p>
             Enter site information below to view the monitoring dashboard.
           </p>
         </div>
 
-        <form className="site-card" onSubmit={handleContinue}>
-          <label htmlFor="dashboard-site-name">Site Name</label>
+        <form
+          className="site-card dashboard-login-card"
+          onSubmit={handleContinue}
+        >
+          <label htmlFor="dashboard-site-name">
+            Site Name
+          </label>
+
           <div className="site-input">
             <span aria-hidden="true">🏢</span>
             <input
@@ -133,7 +135,10 @@ function DashboardLogin() {
             />
           </div>
 
-          <label htmlFor="dashboard-site-code">Site Code</label>
+          <label htmlFor="dashboard-site-code">
+            Site Code
+          </label>
+
           <div className="site-input">
             <span aria-hidden="true">🔒</span>
             <input
@@ -147,7 +152,10 @@ function DashboardLogin() {
             />
           </div>
 
-          <label htmlFor="dashboard-full-name">Full Name</label>
+          <label htmlFor="dashboard-full-name">
+            Full Name
+          </label>
+
           <div className="site-input">
             <span aria-hidden="true">👤</span>
             <input
@@ -161,7 +169,10 @@ function DashboardLogin() {
             />
           </div>
 
-          <label htmlFor="dashboard-supervisor-pin">Supervisor PIN</label>
+          <label htmlFor="dashboard-supervisor-pin">
+            Supervisor PIN
+          </label>
+
           <div className="site-input">
             <span aria-hidden="true">🔑</span>
             <input
@@ -182,15 +193,7 @@ function DashboardLogin() {
           </div>
 
           {error && (
-            <p
-              role="alert"
-              style={{
-                color: "#ff6b6b",
-                fontSize: "13px",
-                margin: "14px 0 0",
-                textAlign: "center",
-              }}
-            >
+            <p className="dashboard-login-error" role="alert">
               {error}
             </p>
           )}
