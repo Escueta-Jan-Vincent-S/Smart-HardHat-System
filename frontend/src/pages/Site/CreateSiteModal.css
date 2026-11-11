@@ -1,5 +1,6 @@
+
 /* Create New Site supervisor-choice modal.
-   This is separate from Site.css so the existing Site Access design stays unchanged. */
+   Original design preserved with Jetson Nano sizing adjustments. */
 
 .create-site-modal-overlay,
 .create-site-modal-overlay * {
@@ -287,8 +288,8 @@
   }
 }
 
-
 /* Continue to the CreateSite page */
+
 .create-site-modal__continue {
   display: flex;
   align-items: center;
@@ -348,3 +349,120 @@
     transition: none;
   }
 }
+
+/* =====================================================
+   JETSON NANO - 1024 x 600
+   Preserve original centered Grid positioning.
+===================================================== */
+
+@media (min-width: 769px) and (min-height: 560px) and (max-height: 700px) {
+  .create-site-modal-overlay {
+    padding: 14px;
+  }
+
+  .create-site-modal {
+    width: min(100%, 490px);
+    max-height: calc(100vh - 28px);
+    max-height: calc(100dvh - 28px);
+    padding: 22px 26px 17px;
+    border-radius: 17px;
+    scrollbar-width: thin;
+    scrollbar-color: #53647d #08142b;
+  }
+
+  .create-site-modal__close {
+    top: 10px;
+    right: 11px;
+    width: 33px;
+    height: 33px;
+    font-size: 25px;
+  }
+
+  .create-site-modal__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 9px;
+    font-size: 23px;
+    border-radius: 14px;
+  }
+
+  .create-site-modal__eyebrow {
+    margin-bottom: 5px;
+    font-size: 9px;
+    letter-spacing: 1.8px;
+  }
+
+  .create-site-modal h2 {
+    font-size: 24px;
+  }
+
+  .create-site-modal__description {
+    margin: 7px auto 13px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .create-site-modal__options {
+    gap: 9px;
+  }
+
+  .create-site-option {
+    min-height: 70px;
+    gap: 12px;
+    padding: 10px 13px;
+    border-radius: 12px;
+  }
+
+  .create-site-option__icon {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .create-site-option__icon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .create-site-option__text {
+    gap: 3px;
+  }
+
+  .create-site-option__text strong {
+    font-size: 13px;
+  }
+
+  .create-site-option__text small {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .create-site-option__radio {
+    flex-basis: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .create-site-modal__selection {
+    margin-top: 9px;
+    font-size: 11px;
+  }
+
+  .create-site-modal__continue {
+    min-height: 41px;
+    margin-top: 12px;
+    padding: 9px 15px;
+    font-size: 11px;
+  }
+
+  .create-site-modal__continue span {
+    font-size: 16px;
+  }
+
+  .create-site-modal__note {
+    margin-top: 9px;
+    font-size: 9px;
+  }
+}
+  

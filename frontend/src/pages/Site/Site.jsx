@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import "./Site.css";
 import "./CreateSiteModal.css";
+import "./SiteAccessResponsive.css";
 
 import bgImage from "../../assets/images/landing-page-background.jpg";
 import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
@@ -12,22 +13,13 @@ import API_BASE_URL from "../../config/api";
 function Site() {
   const navigate = useNavigate();
 
-  // =========================
-  // FORM DATA
-  // =========================
   const [siteName, setSiteName] = useState("");
   const [siteCode, setSiteCode] = useState("");
   const [supervisorPin, setSupervisorPin] = useState("");
 
-  // =========================
-  // STATUS
-  // =========================
   const [error, setError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
 
-  // =========================
-  // CREATE SITE MODAL
-  // =========================
   const [isCreateSiteModalOpen, setIsCreateSiteModalOpen] = useState(false);
   const [selectedSupervisorType, setSelectedSupervisorType] = useState("");
 
@@ -44,9 +36,10 @@ function Site() {
   const handleContinueCreateSite = () => {
     if (!selectedSupervisorType) return;
 
-    const destination = selectedSupervisorType === "existing"
-      ? "/create-site-existing"
-      : "/create-site";
+    const destination =
+      selectedSupervisorType === "existing"
+        ? "/create-site-existing"
+        : "/create-site";
 
     closeCreateSiteModal();
     navigate(destination);
@@ -62,12 +55,10 @@ function Site() {
     };
 
     window.addEventListener("keydown", handleEscape);
+
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isCreateSiteModalOpen]);
 
-  // =========================
-  // VERIFY SITE
-  // =========================
   const handleVerify = async () => {
     setError("");
 
@@ -89,20 +80,17 @@ function Site() {
     try {
       setIsVerifying(true);
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/sites/verify`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            site_name: siteName.trim(),
-            site_code: siteCode.trim(),
-            supervisor_pin: supervisorPin.trim(),
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/sites/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          site_name: siteName.trim(),
+          site_code: siteCode.trim(),
+          supervisor_pin: supervisorPin.trim(),
+        }),
+      });
 
       const data = await response.json();
 
@@ -124,18 +112,14 @@ function Site() {
     }
   };
 
-  // =========================
-  // PAGE
-  // =========================
   return (
     <div
-      className="site-page"
+      className="site-page site-access-page"
       style={{
         backgroundImage: `url(${bgImage})`,
       }}
     >
       <div className="site-panel">
-        {/* HEADER */}
         <header className="site-header">
           <img
             src={hardhatLogo}
@@ -149,7 +133,6 @@ function Site() {
           </div>
         </header>
 
-        {/* TITLE */}
         <div className="site-title">
           <h1>Construction Site Access</h1>
           <p>
@@ -157,9 +140,7 @@ function Site() {
           </p>
         </div>
 
-        {/* SITE ACCESS CARD */}
         <div className="site-card">
-          {/* SITE NAME */}
           <label>Site Name</label>
 
           <div className="site-input">
@@ -173,7 +154,6 @@ function Site() {
             />
           </div>
 
-          {/* SITE CODE */}
           <label>Site Code</label>
 
           <div className="site-input">
@@ -187,7 +167,6 @@ function Site() {
             />
           </div>
 
-          {/* SUPERVISOR PIN */}
           <label>Supervisor PIN</label>
 
           <div className="site-input">
@@ -201,7 +180,6 @@ function Site() {
             />
           </div>
 
-          {/* ERROR */}
           {error && (
             <p
               style={{
@@ -215,7 +193,6 @@ function Site() {
             </p>
           )}
 
-          {/* VERIFY */}
           <button
             type="button"
             className="verify-btn"
@@ -225,14 +202,12 @@ function Site() {
             {isVerifying ? "VERIFYING..." : "✓ VERIFY"}
           </button>
 
-          {/* DIVIDER */}
           <div className="site-divider">
             <span></span>
             <p>OR</p>
             <span></span>
           </div>
 
-          {/* CREATE NEW SITE */}
           <button
             type="button"
             className="create-site-btn"
@@ -244,7 +219,6 @@ function Site() {
         </div>
       </div>
 
-      {/* CREATE NEW SITE MODAL */}
       {isCreateSiteModalOpen && (
         <div
           className="create-site-modal-overlay"
@@ -273,8 +247,12 @@ function Site() {
               🏢
             </div>
 
-            <p className="create-site-modal__eyebrow">NEW CONSTRUCTION SITE</p>
+            <p className="create-site-modal__eyebrow">
+              NEW CONSTRUCTION SITE
+            </p>
+
             <h2 id="create-site-modal-title">Create New Site</h2>
+
             <p className="create-site-modal__description">
               Choose the type of supervisor for this construction site.
             </p>
@@ -300,7 +278,9 @@ function Site() {
 
                 <span className="create-site-option__text">
                   <strong>Existing Supervisor</strong>
-                  <small>Use a supervisor already registered in SMSYS.</small>
+                  <small>
+                    Use a supervisor already registered in SMSYS.
+                  </small>
                 </span>
 
                 <span className="create-site-option__radio" aria-hidden="true">
