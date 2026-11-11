@@ -58,6 +58,7 @@ try:
     from .api.worker_api import register_worker_api
     from .api.zone_localization_api import register_zone_localization_api
     from .api.analytics_api import register_analytics_api
+    from .api.account_settings_api import register_account_settings_api
 
 except ImportError:
     from api.system_api import register_system_api
@@ -71,6 +72,7 @@ except ImportError:
     from api.worker_api import register_worker_api
     from api.zone_localization_api import register_zone_localization_api
     from api.analytics_api import register_analytics_api
+    from api.account_settings_api import register_account_settings_api
 
 
 # ============================================================
@@ -127,6 +129,12 @@ register_worker_api(
 
 register_zone_localization_api(app)
 register_analytics_api(app)
+
+register_account_settings_api(
+    app=app,
+    get_database=get_database,
+    get_authenticated_supervisor=get_authenticated_supervisor,
+)
 
 
 # ============================================================
