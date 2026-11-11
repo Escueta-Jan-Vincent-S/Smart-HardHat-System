@@ -1,44 +1,68 @@
-/* Worker-only layout and Smart Hardhat controls.
-   The page shell, header, title, card, inputs, and primary button reuse Site.css. */
 
-/* Reuse the same page, panel, and form dimensions as Dashboard Login. */
+/* =====================================================
+   WORKER LOGIN PAGE
+   Original design preserved + Jetson Nano optimization
+===================================================== */
+
+/* =========================
+   PAGE LAYOUT
+========================= */
+
 .site-page.worker-site-page {
   min-height: 100vh;
   min-height: 100svh;
   height: auto;
+
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-/* Header logo image */
+/* =========================
+   HEADER
+========================= */
+
 .site-page.worker-site-page .site-header .site-logo {
   width: clamp(54px, 6vw, 72px);
   height: clamp(54px, 6vw, 72px);
+
   display: block;
   flex: 0 0 auto;
+
   object-fit: contain;
 }
 
-/* Keep the form's normal .site-card width and max-width from Site.css. */
+/* =========================
+   LOGIN CARD
+========================= */
+
 .site-page.worker-site-page .site-card.worker-login-card {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
+/* =========================
+   FORM FIELDS
+========================= */
+
 .worker-field {
   min-width: 0;
+
   margin: 0 0 18px;
   padding: 0;
+
   border: 0;
 }
 
 .worker-field > label,
 .worker-hardhat-field > legend {
   display: block;
+
   margin: 0 0 8px;
   padding: 0;
+
   color: #d0d0d0;
+
   font-size: 15px;
   font-weight: 600;
 }
@@ -51,6 +75,7 @@
 
 .site-page.worker-site-page .site-input svg {
   display: block;
+
   width: 20px;
   height: 20px;
 }
@@ -59,9 +84,15 @@
   width: 100%;
 }
 
+/* =========================
+   SMART HARDHAT PICKER
+========================= */
+
 .worker-picker {
   overflow: hidden;
+
   background: #010917;
+
   border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 12px;
 }
@@ -69,21 +100,29 @@
 .worker-picker__header {
   display: flex;
   align-items: center;
+
   gap: 12px;
+
   width: 100%;
   min-height: 48px;
+
   padding: 10px 14px;
+
   color: #d0d0d0;
   text-align: left;
+
   background: transparent;
   border: 0;
+
   cursor: pointer;
 }
 
 .worker-picker__header > span {
   min-width: 0;
   flex: 1;
+
   overflow: hidden;
+
   font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -97,14 +136,18 @@
 .worker-picker__icon {
   width: 25px;
   height: 25px;
+
   flex: 0 0 auto;
 }
 
 .worker-picker__arrow {
   width: 19px;
   height: 19px;
+
   margin-left: auto;
+
   flex: 0 0 auto;
+
   transition: transform 0.2s ease;
 }
 
@@ -113,27 +156,62 @@
 }
 
 .worker-picker__list {
+  max-height: 180px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
   border-top: 1px solid rgba(255, 255, 255, 0.25);
+
+  scrollbar-width: thin;
+  scrollbar-color: #53647d #010917;
+}
+
+.worker-picker__list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.worker-picker__list::-webkit-scrollbar-track {
+  background: #010917;
+}
+
+.worker-picker__list::-webkit-scrollbar-thumb {
+  background: #53647d;
+  border-radius: 10px;
 }
 
 .worker-picker__message {
   margin: 0;
   padding: 14px;
+
   color: #aeb9ca;
+
   font-size: 13px;
   line-height: 1.5;
 }
 
+/* =========================
+   HARDHAT OPTIONS
+========================= */
+
 .worker-option {
   position: relative;
+
   display: flex;
   align-items: center;
+
   gap: 12px;
+
   min-height: 48px;
+
+  margin: 0 !important;
   padding: 9px 14px;
+
   color: #d0d0d0;
   font-size: 14px;
+
   cursor: pointer;
+
   transition: background 0.15s ease;
 }
 
@@ -147,6 +225,7 @@
 
 .worker-option--selected {
   background: rgba(254, 175, 28, 0.13);
+
   box-shadow: inset 3px 0 0 #feaf1c;
 }
 
@@ -157,8 +236,10 @@
 
 .worker-option__radio {
   position: absolute;
+
   width: 1px;
   height: 1px;
+
   opacity: 0;
   pointer-events: none;
 }
@@ -171,24 +252,32 @@
 .worker-option__dot {
   width: 10px;
   height: 10px;
+
   flex: 0 0 auto;
+
   border-radius: 50%;
+
   background: #07a30b;
+
   box-shadow: 0 0 0 3px rgba(7, 163, 11, 0.12);
 }
 
 .worker-option__dot.is-in-use {
   background: #b3001b;
+
   box-shadow: 0 0 0 3px rgba(179, 0, 27, 0.12);
 }
 
 .worker-option__id {
+  min-width: 0;
+
   overflow-wrap: anywhere;
 }
 
 .worker-option__status {
   margin-left: auto;
   padding-left: 8px;
+
   font-size: 12px;
   text-align: right;
   white-space: nowrap;
@@ -206,33 +295,49 @@
   color: #ff6b7b;
 }
 
+/* =========================
+   SITE INFORMATION
+========================= */
+
 .worker-site-note {
   margin: 9px 2px 0;
+
   color: #aab5c7;
   font-size: 12px;
 }
 
+/* =========================
+   FEEDBACK MESSAGES
+========================= */
+
 .worker-feedback {
   display: flex;
   align-items: flex-start;
+
   gap: 10px;
+
   margin: 0 0 16px;
   padding: 12px 14px;
+
   border: 1px solid transparent;
   border-radius: 10px;
+
   font-size: 13px;
   line-height: 1.5;
+
   overflow-wrap: anywhere;
 }
 
 .worker-feedback--error {
   color: #ffd2d5;
+
   background: rgba(179, 0, 27, 0.17);
   border-color: rgba(226, 75, 93, 0.55);
 }
 
 .worker-feedback--success {
   color: #d8ffe0;
+
   background: rgba(7, 163, 11, 0.13);
   border-color: rgba(7, 201, 20, 0.45);
 }
@@ -249,12 +354,17 @@
 
 .worker-feedback__check {
   display: grid;
+
   width: 22px;
   height: 22px;
+
   flex: 0 0 auto;
+
   place-items: center;
+
   color: #010917;
   background: #37d75b;
+
   border-radius: 50%;
 }
 
@@ -263,28 +373,43 @@
   height: 14px;
 }
 
+/* =========================
+   CONFIRM BUTTON
+========================= */
+
 .site-page.worker-site-page .worker-confirm-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 9px;
 }
 
 .worker-confirm-btn svg {
   width: 18px;
   height: 18px;
+
   flex: 0 0 auto;
 }
 
+/* =========================
+   REFRESH BUTTON
+========================= */
+
 .worker-refresh-btn {
   display: block;
+
   width: 100%;
+
   margin-top: 10px;
   padding: 8px 10px;
+
   color: #c1cada;
   font-size: 12px;
+
   background: transparent;
   border: 0;
+
   cursor: pointer;
 }
 
@@ -298,7 +423,237 @@
   cursor: not-allowed;
 }
 
+/* =====================================================
+   JETSON NANO TOUCHSCREEN
+   Target: 1024 x 600 | Browser zoom: 100%
+===================================================== */
+
+@media (min-width: 769px) and (min-height: 560px) and (max-height: 700px) {
+
+  .site-page.worker-site-page {
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+
+    min-height: 0;
+
+    padding: 12px 24px;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+  }
+
+  .site-page.worker-site-page .site-panel {
+    width: 100%;
+    max-width: 760px;
+
+    min-height: 0;
+    height: auto;
+
+    padding: 16px 30px;
+
+    border-radius: 16px;
+  }
+
+  /* Header */
+
+  .site-page.worker-site-page .site-header {
+    gap: 13px;
+  }
+
+  .site-page.worker-site-page .site-header .site-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .site-page.worker-site-page .site-brand h2 {
+    font-size: 30px;
+  }
+
+  .site-page.worker-site-page .site-brand p {
+    margin-top: 2px;
+    font-size: 11px;
+  }
+
+  /* Page title */
+
+  .site-page.worker-site-page .site-title {
+    margin-top: 10px;
+  }
+
+  .site-page.worker-site-page .site-title h1 {
+    font-size: 25px;
+  }
+
+  .site-page.worker-site-page .site-title p {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  /* Form card */
+
+  .site-page.worker-site-page .site-card.worker-login-card {
+    width: 100%;
+    max-width: 520px;
+
+    margin-top: 12px;
+    padding: 16px 20px;
+
+    border-radius: 14px;
+  }
+
+  /* Form fields */
+
+  .site-page.worker-site-page .worker-field {
+    margin-bottom: 10px;
+  }
+
+  .site-page.worker-site-page .worker-field > label,
+  .site-page.worker-site-page .worker-hardhat-field > legend {
+    margin-bottom: 5px;
+
+    font-size: 13px;
+  }
+
+  /* Inputs */
+
+  .site-page.worker-site-page .site-input {
+    gap: 10px;
+    padding: 9px 12px;
+
+    border-radius: 10px;
+  }
+
+  .site-page.worker-site-page .site-input > span {
+    font-size: 15px;
+  }
+
+  .site-page.worker-site-page .site-input input {
+    font-size: 13px;
+  }
+
+  /* Hardhat picker */
+
+  .site-page.worker-site-page .worker-picker {
+    border-radius: 10px;
+  }
+
+  .site-page.worker-site-page .worker-picker__header {
+    min-height: 40px;
+    padding: 7px 12px;
+
+    gap: 10px;
+  }
+
+  .site-page.worker-site-page .worker-picker__header > span {
+    font-size: 13px;
+  }
+
+  .site-page.worker-site-page .worker-picker__icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .site-page.worker-site-page .worker-picker__arrow {
+    width: 17px;
+    height: 17px;
+  }
+
+  .site-page.worker-site-page .worker-picker__list {
+    max-height: 88px;
+  }
+
+  .site-page.worker-site-page .worker-picker__message {
+    padding: 9px 12px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  /* Hardhat options */
+
+  .site-page.worker-site-page .worker-option {
+    min-height: 36px;
+    padding: 6px 12px;
+
+    gap: 10px;
+
+    font-size: 12px;
+  }
+
+  .site-page.worker-site-page .worker-option__dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .site-page.worker-site-page .worker-option__status {
+    font-size: 11px;
+  }
+
+  /* Site note */
+
+  .site-page.worker-site-page .worker-site-note {
+    margin-top: 6px;
+    font-size: 11px;
+  }
+
+  /* Feedback */
+
+  .site-page.worker-site-page .worker-feedback {
+    gap: 8px;
+
+    margin-bottom: 9px;
+    padding: 8px 10px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .site-page.worker-site-page .worker-feedback__check {
+    width: 19px;
+    height: 19px;
+  }
+
+  .site-page.worker-site-page .worker-feedback__check svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Confirm button */
+
+  .site-page.worker-site-page .worker-confirm-btn {
+    min-height: 39px;
+
+    margin-top: 9px;
+    padding: 9px 14px;
+
+    font-size: 13px;
+  }
+
+  .site-page.worker-site-page .worker-confirm-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Refresh button */
+
+  .site-page.worker-site-page .worker-refresh-btn {
+    margin-top: 5px;
+    padding: 5px 8px;
+
+    font-size: 11px;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 560px) {
+
   .site-page.worker-site-page .site-header .site-logo {
     width: 48px;
     height: 48px;
@@ -306,6 +661,7 @@
 }
 
 @media (max-width: 480px) {
+
   .worker-option {
     gap: 9px;
     padding-left: 10px;
@@ -318,6 +674,7 @@
 }
 
 @media (max-width: 380px) {
+
   .site-page.worker-site-page .site-header .site-logo {
     width: 44px;
     height: 44px;
