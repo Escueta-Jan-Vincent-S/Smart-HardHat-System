@@ -4,25 +4,40 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color" content="#06152b" />
+    <meta
+      name="description"
+      content="SMSYS - Smart Monitoring System for Safer Construction Sites"
+    />
+
     <title>SMSYS | Smart Monitoring System</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     />
+
     <link rel="stylesheet" href="./landingPage.css" />
   </head>
+
   <body>
     <main class="page">
+
+      <!-- Top Navigation -->
+
       <header class="topbar">
+
         <a class="brand" href="#">
           <img
             class="brand__logo"
             src="./assets/icons/1.hardhat_logo.png"
             alt="SMSYS hard hat logo"
           />
+
           <span class="brand__name">SMSYS</span>
         </a>
 
@@ -31,56 +46,96 @@
           href="/site-access"
           onclick="window.open('/worker-login', '_blank')"
         >
-  Get Started
-</a>
+          Get Started
+        </a>
+
       </header>
 
+
+      <!-- Hero Section -->
+
       <section class="hero">
+
         <div class="hero__content">
-          <p class="hero__tag">Welcome to SMSYS</p>
+
+          <p class="hero__tag">
+            Welcome to SMSYS
+          </p>
+
           <h1 class="hero__title">
             Smart Monitoring for Safer Construction Sites
           </h1>
+
           <p class="hero__text">
             SMSYS is a safety monitoring system for construction sites. It uses
             a Smart Hardhat to monitor workers in real time so supervisors can
             respond to hazards early.
           </p>
+
           <p class="hero__text">
             The dashboard tracks PPE compliance, worker drowsiness, device
             connectivity, and worker location by zone.
           </p>
+
         </div>
 
+
+        <!-- Hardhat Showcase -->
+
         <div class="showcase">
+
           <div class="showcase__blob">
+
             <img
               class="showcase__logo"
               src="./assets/icons/1.hardhat_logo.png"
-              alt=""
+              alt="SMSYS Smart Hardhat"
             />
+
           </div>
-          <span class="showcase__pill showcase__pill--top">PPE Detection</span>
-          <span class="showcase__pill showcase__pill--left"
-            >Drowsiness Monitoring</span
-          >
-          <span class="showcase__pill showcase__pill--right"
-            >Zone Tracking</span
-          >
+
+          <span class="showcase__pill showcase__pill--top">
+            PPE Detection
+          </span>
+
+          <span class="showcase__pill showcase__pill--left">
+            Drowsiness Monitoring
+          </span>
+
+          <span class="showcase__pill showcase__pill--right">
+            Zone Tracking
+          </span>
+
         </div>
+
       </section>
 
+
+      <!-- Features Section -->
+
       <section class="features">
+
         <header class="features__header">
-          <p class="features__label">Features</p>
+
+          <p class="features__label">
+            Features
+          </p>
+
           <h2 class="features__title">
             Delivering Safety Through Smart Monitoring
           </h2>
+
         </header>
 
+
         <div class="features__grid">
+
+          <!-- PPE Detection -->
+
           <article class="feature-card">
+
             <span class="feature-card__badge">
+
               <svg
                 class="feature-card__icon"
                 viewBox="0 0 24 24"
@@ -88,15 +143,26 @@
               >
                 <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" />
               </svg>
+
             </span>
-            <h3 class="feature-card__title">PPE Detection</h3>
+
+            <h3 class="feature-card__title">
+              PPE Detection
+            </h3>
+
             <p class="feature-card__text">
               Checks hardhats, vests, gloves, and boots, and reports violations.
             </p>
+
           </article>
 
+
+          <!-- Drowsiness Monitoring -->
+
           <article class="feature-card">
+
             <span class="feature-card__badge">
+
               <svg
                 class="feature-card__icon"
                 viewBox="0 0 24 24"
@@ -106,16 +172,27 @@
                   d="M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"
                 />
               </svg>
+
             </span>
-            <h3 class="feature-card__title">Drowsiness Alerts</h3>
+
+            <h3 class="feature-card__title">
+              Drowsiness Alerts
+            </h3>
+
             <p class="feature-card__text">
               Detects signs of fatigue so supervisors can act before an
               incident.
             </p>
+
           </article>
 
+
+          <!-- Zone Localization -->
+
           <article class="feature-card">
+
             <span class="feature-card__badge">
+
               <svg
                 class="feature-card__icon"
                 viewBox="0 0 24 24"
@@ -125,29 +202,52 @@
                   d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"
                 />
               </svg>
+
             </span>
-            <h3 class="feature-card__title">Zone Localization</h3>
+
+            <h3 class="feature-card__title">
+              Zone Localization
+            </h3>
+
             <p class="feature-card__text">
               Shows the floor and zone where each worker is located.
             </p>
+
           </article>
+
         </div>
+
       </section>
 
+
+      <!-- System Modules Ticker -->
+
       <section class="ticker" aria-label="System modules">
+
         <ul class="ticker__list">
+
           <li class="ticker__item">PPE Status</li>
           <li class="ticker__item">Drowsiness Status</li>
           <li class="ticker__item">Device Connectivity</li>
           <li class="ticker__item">Alerts History</li>
           <li class="ticker__item">Zone Localization</li>
           <li class="ticker__item">Analytics</li>
+
         </ul>
+
       </section>
 
+
+      <!-- Footer -->
+
       <footer class="footer">
-        <small>&copy; SMSYS - Smart Monitoring System</small>
+
+        <small>
+          &copy; SMSYS - Smart Monitoring System
+        </small>
+
       </footer>
+
     </main>
   </body>
 </html>
