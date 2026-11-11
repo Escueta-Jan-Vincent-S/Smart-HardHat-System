@@ -149,19 +149,8 @@ function Verify() {
 
               <button
                 type="button"
+                className="verify-dashboard-btn"
                 onClick={goToDashboardLogin}
-                style={{
-                  width: "100%",
-                  marginTop: "12px",
-                  padding: "14px",
-                  border: "none",
-                  borderRadius: "8px",
-                  background: "#d99a24",
-                  color: "#ffffff",
-                  fontWeight: "700",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
               >
                 GO TO DASHBOARD →
               </button>
