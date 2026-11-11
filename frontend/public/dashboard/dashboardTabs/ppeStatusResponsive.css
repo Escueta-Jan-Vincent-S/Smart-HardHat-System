@@ -1,0 +1,769 @@
+
+/* ==========================================================================
+   SMSYS - PPE STATUS
+   Jetson Nano Touchscreen: 1024 x 600
+   Layout based on Dashboard Overview
+   All styles scoped to PPE Status only.
+   ========================================================================== */
+
+@media (min-width: 769px) and (max-height: 700px) {
+
+  /* ==================================================
+     1. PAGE CONTAINER
+     ================================================== */
+
+  body[data-active="ppe"] #app.page {
+    --scale: 1;
+
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    transform: none !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+
+    display: block !important;
+
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* ==================================================
+     2. MAIN CONTENT AREA
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > main {
+    position: absolute !important;
+
+    top: 105px !important;
+    left: 235px !important;
+
+    width: calc(100vw - 250px) !important;
+    height: calc(100vh - 115px) !important;
+
+    box-sizing: border-box !important;
+
+    display: grid !important;
+
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+
+    grid-template-rows:
+      100px
+      225px
+      225px !important;
+
+    grid-template-areas:
+      "stat1 stat1 stat2 stat2 stat3 stat3"
+      "table table table table table table"
+      "frames frames frames frames breakdown breakdown" !important;
+
+    column-gap: 12px !important;
+    row-gap: 12px !important;
+
+    padding: 0 5px 18px 0 !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    align-content: start !important;
+  }
+
+  /* ==================================================
+     3. PAGE TITLE
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > main > .dash-title {
+    position: fixed !important;
+
+    top: 70px !important;
+    left: 235px !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    font-weight: 700 !important;
+
+    z-index: 5 !important;
+  }
+
+  /* ==================================================
+     4. SIDEBAR
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > .nav {
+    --cut: 60px !important;
+
+    position: fixed !important;
+
+    top: 10px !important;
+    left: 10px !important;
+
+    width: 205px !important;
+    height: calc(100vh - 20px) !important;
+
+    z-index: 90 !important;
+  }
+
+  body[data-active="ppe"] .nav-head {
+    height: 68px !important;
+    gap: 10px !important;
+    padding-left: 12px !important;
+    border-radius: 18px 18px 0 0 !important;
+  }
+
+  body[data-active="ppe"] .nav-head img {
+    width: 38px !important;
+    height: 38px !important;
+    flex-shrink: 0 !important;
+  }
+
+  body[data-active="ppe"] .nav-head strong {
+    font-size: 21px !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-active="ppe"] .nav-head small {
+    font-size: 9px !important;
+    white-space: nowrap !important;
+  }
+
+  body[data-active="ppe"] .nav-body {
+    top: 68px !important;
+    border-radius: 0 0 28px 18px !important;
+
+    -webkit-mask-size:
+      100% 100%,
+      21px 42px,
+      calc(100% - 78px) 42px !important;
+
+    -webkit-mask-position:
+      0 0,
+      58px var(--cut),
+      78px var(--cut) !important;
+
+    mask-size:
+      100% 100%,
+      21px 42px,
+      calc(100% - 78px) 42px !important;
+
+    mask-position:
+      0 0,
+      58px var(--cut),
+      78px var(--cut) !important;
+  }
+
+  body[data-active="ppe"] .nav-rail {
+    top: 80px !important;
+    width: 52px !important;
+    border-radius: 16px 0 0 18px !important;
+  }
+
+  body[data-active="ppe"] .nav-notch {
+    top: calc(68px + var(--cut)) !important;
+    left: 58px !important;
+    height: 42px !important;
+    border-radius: 21px 0 0 21px !important;
+  }
+
+  body[data-active="ppe"] .nav-list {
+    gap: 4px !important;
+    padding-top: 82px !important;
+    padding-bottom: 12px !important;
+  }
+
+  body[data-active="ppe"] .nav-item {
+    display: flex !important;
+    align-items: center !important;
+
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 42px !important;
+    min-width: 0 !important;
+
+    padding: 0 !important;
+    gap: 0 !important;
+
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+  }
+
+  body[data-active="ppe"] .nav-item svg {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+
+    flex-shrink: 0 !important;
+    margin: 0 30px 0 14px !important;
+  }
+
+  body[data-active="ppe"] .nav-item.active::before {
+    width: 4px !important;
+    height: 42px !important;
+  }
+
+  /* ==================================================
+     5. TOPBAR
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > .topbar {
+    position: fixed !important;
+
+    top: 10px !important;
+    left: 235px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    width: calc(100vw - 250px) !important;
+    height: 48px !important;
+
+    z-index: 100 !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="ppe"] .topbar-item {
+    min-width: 0 !important;
+    padding-left: 12px !important;
+  }
+
+  body[data-active="ppe"] .topbar small {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+  }
+
+  body[data-active="ppe"] .topbar .value {
+    font-size: 11px !important;
+  }
+
+  /* Site selector */
+
+  body[data-active="ppe"] .topbar-site {
+    position: relative !important;
+    width: 25% !important;
+    padding-left: 0 !important;
+    border-left: 0 !important;
+
+    z-index: 102 !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="ppe"] .topbar-site .dropdown {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="ppe"] .site-toggle {
+    position: relative !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    padding: 0 20px 0 5px !important;
+  }
+
+  body[data-active="ppe"] .site-toggle .chevron {
+    position: absolute !important;
+    top: 30px !important;
+    right: 90px !important;
+
+    width: 9px !important;
+    height: 9px !important;
+
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body[data-active="ppe"] .topbar-site .dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 5px !important;
+
+    z-index: 200 !important;
+    min-width: 190px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
+
+  /* Date and time */
+
+  body[data-active="ppe"] .topbar-datetime {
+    width: 42% !important;
+    padding-left: 12px !important;
+  }
+
+  body[data-active="ppe"] .datetime {
+    gap: 10px !important;
+  }
+
+  body[data-active="ppe"] .divider {
+    width: 1px !important;
+    height: 15px !important;
+  }
+
+  /* Notifications */
+
+  body[data-active="ppe"] .topbar-notifications {
+    position: relative !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 9% !important;
+    padding-left: 0 !important;
+
+    overflow: visible !important;
+    z-index: 102 !important;
+  }
+
+  body[data-active="ppe"] .topbar-notifications .dropdown {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="ppe"] .bell-toggle {
+    position: relative !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+  }
+
+  body[data-active="ppe"] .bell-toggle > svg {
+    width: 25px !important;
+    height: 25px !important;
+  }
+
+  body[data-active="ppe"] .bell-toggle .badge {
+    position: absolute !important;
+    top: 11px !important;
+    right: 18px !important;
+
+    min-width: 14px !important;
+    height: 14px !important;
+
+    font-size: 9px !important;
+    line-height: 14px !important;
+
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body[data-active="ppe"] .notifications-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: -35px !important;
+    left: auto !important;
+
+    z-index: 200 !important;
+    width: 280px !important;
+  }
+
+  /* Supervisor account */
+
+  body[data-active="ppe"] .topbar-account {
+    flex: 1 !important;
+    gap: 8px !important;
+    padding-left: 10px !important;
+  }
+
+  body[data-active="ppe"] .topbar-account svg {
+    width: 34px !important;
+    height: 34px !important;
+    flex-shrink: 0 !important;
+  }
+
+  body[data-active="ppe"] .topbar-account span {
+    max-width: 130px !important;
+    font-size: 11px !important;
+  }
+
+  /* ==================================================
+     6. SUMMARY CARDS
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > main > .ppe-summary-card {
+    position: relative !important;
+
+    top: auto !important;
+    left: auto !important;
+
+    width: auto !important;
+    height: 100px !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 10px 12px !important;
+
+    border-radius: 12px !important;
+  }
+
+  body[data-active="ppe"] #app.page > main > .ppe-summary-compliant {
+    grid-area: stat1 !important;
+  }
+
+  body[data-active="ppe"] #app.page > main > .ppe-summary-violation {
+    grid-area: stat2 !important;
+  }
+
+  body[data-active="ppe"] #app.page > main > .ppe-summary-unmonitored {
+    grid-area: stat3 !important;
+  }
+
+  body[data-active="ppe"] .ppe-summary-card h3 {
+    height: auto !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+  }
+
+  body[data-active="ppe"] .ppe-summary-card .big {
+    margin-top: 3px !important;
+
+    font-size: 29px !important;
+    line-height: 34px !important;
+  }
+
+  body[data-active="ppe"] .ppe-summary-card p {
+    margin: 0 !important;
+    font-size: 11px !important;
+    line-height: 16px !important;
+  }
+
+  body[data-active="ppe"] .ppe-summary-card .stat-ico {
+    position: absolute !important;
+
+    top: 43px !important;
+    right: 9px !important;
+
+    width: 39px !important;
+    height: 39px !important;
+  }
+
+  /* ==================================================
+     7. PPE STATUS TABLE
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > main > .ppe-table-card {
+    grid-area: table !important;
+
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+
+    width: auto !important;
+    height: 225px !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 10px !important;
+
+    border-radius: 12px !important;
+  }
+
+  body[data-active="ppe"] .ppe-table-card h3 {
+    flex-shrink: 0 !important;
+
+    height: auto !important;
+    min-height: 29px !important;
+
+    margin: 0 !important;
+    padding: 0 5px 5px !important;
+
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+
+  body[data-active="ppe"] #app.page > main #ppeTable {
+    flex: 1 !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 100% !important;
+    overflow: auto !important;
+  }
+
+  body[data-active="ppe"] #app.page > main #ppeTable .ppe-loading {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12px !important;
+
+    font-size: 13px !important;
+    text-align: center !important;
+  }
+
+  body[data-active="ppe"] #app.page > main #ppeTable .table {
+    width: 100% !important;
+    min-width: 600px !important;
+  }
+
+  body[data-active="ppe"] #app.page > main #ppeTable .table th,
+  body[data-active="ppe"] #app.page > main #ppeTable .table td {
+    height: 32px !important;
+    padding: 4px 5px !important;
+  }
+
+  body[data-active="ppe"] #app.page > main #ppeTable .table th {
+    font-size: 11px !important;
+  }
+
+  body[data-active="ppe"] #app.page > main #ppeTable .table td {
+    font-size: 10px !important;
+  }
+
+  /* ==================================================
+     8. PPE DETECTION FRAMES
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > main > .ppe-frames-card {
+    grid-area: frames !important;
+
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+
+    width: auto !important;
+    height: 225px !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 10px !important;
+
+    border-radius: 12px !important;
+  }
+
+  body[data-active="ppe"] .ppe-frames-card h3 {
+    flex-shrink: 0 !important;
+
+    height: auto !important;
+    min-height: 29px !important;
+
+    margin: 0 !important;
+    padding: 0 5px 5px !important;
+
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+
+  body[data-active="ppe"] .ppe-frames-card .frames {
+    flex: 1 !important;
+    min-height: 0 !important;
+    gap: 9px !important;
+  }
+
+  body[data-active="ppe"] .ppe-frames-card .frame {
+    min-width: 0 !important;
+    font-size: 11px !important;
+  }
+
+  body[data-active="ppe"] .ppe-frames-card .frame-img {
+    min-height: 0 !important;
+  }
+
+  body[data-active="ppe"] .ppe-frames-card .frame-placeholder {
+    min-height: 0 !important;
+    padding: 10px !important;
+    font-size: 11px !important;
+  }
+
+  body[data-active="ppe"] .ppe-frames-card figcaption {
+    min-height: 20px !important;
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* ==================================================
+     9. PPE STATUS BREAKDOWN
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > main > .ppe-breakdown-card {
+    grid-area: breakdown !important;
+
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+
+    width: auto !important;
+    height: 225px !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 10px !important;
+
+    border-radius: 12px !important;
+  }
+
+  body[data-active="ppe"] .ppe-breakdown-card h3 {
+    flex-shrink: 0 !important;
+
+    height: auto !important;
+    min-height: 29px !important;
+
+    margin: 0 !important;
+    padding: 0 5px 5px !important;
+
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+
+  body[data-active="ppe"] .ppe-breakdown-card .pie-wrap {
+    flex: 1 !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 8px !important;
+  }
+
+  body[data-active="ppe"] .ppe-breakdown-card .pie {
+    width: 100px !important;
+    height: 100px !important;
+    flex-shrink: 0 !important;
+  }
+
+  body[data-active="ppe"] .ppe-breakdown-card .legend {
+    min-width: 0 !important;
+    gap: 5px !important;
+    font-size: 10px !important;
+  }
+
+  body[data-active="ppe"] .ppe-breakdown-card .lg {
+    gap: 5px !important;
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+  }
+
+  /* ==================================================
+     10. LOGOUT MODAL
+     ================================================== */
+
+  body[data-active="ppe"] #app.page > .modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 300 !important;
+  }
+
+  body[data-active="ppe"] .modal-box {
+    width: min(90vw, 380px) !important;
+    padding: 24px !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-active="ppe"] .modal-box h2 {
+    font-size: 21px !important;
+  }
+
+  body[data-active="ppe"] .modal-box p {
+    margin: 12px 0 20px !important;
+    font-size: 15px !important;
+  }
+
+  body[data-active="ppe"] .btn {
+    height: 43px !important;
+    font-size: 14px !important;
+  }
+
+  /* ==================================================
+     11. SCROLLBAR DESIGN
+     Match Dashboard Overview appearance
+     ================================================== */
+
+  /* Main PPE content scrollbar */
+
+  body[data-active="ppe"] #app.page > main {
+    scrollbar-width: thin !important;
+    scrollbar-color: #53647a transparent !important;
+  }
+
+  body[data-active="ppe"] #app.page > main::-webkit-scrollbar {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  body[data-active="ppe"] #app.page > main::-webkit-scrollbar-track {
+    background: transparent !important;
+    border-radius: 10px !important;
+  }
+
+  body[data-active="ppe"] #app.page > main::-webkit-scrollbar-thumb {
+    background: #53647a !important;
+    border-radius: 10px !important;
+    border: 1px solid transparent !important;
+    background-clip: padding-box !important;
+  }
+
+  body[data-active="ppe"] #app.page > main::-webkit-scrollbar-thumb:hover {
+    background: #71839b !important;
+    background-clip: padding-box !important;
+  }
+
+  /* PPE table scrollbar */
+
+  body[data-active="ppe"] #ppeTable {
+    scrollbar-width: thin !important;
+    scrollbar-color: #53647a transparent !important;
+  }
+
+  body[data-active="ppe"] #ppeTable::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  body[data-active="ppe"] #ppeTable::-webkit-scrollbar-track {
+    background: transparent !important;
+    border-radius: 10px !important;
+  }
+
+  body[data-active="ppe"] #ppeTable::-webkit-scrollbar-thumb {
+    background: #53647a !important;
+    border-radius: 10px !important;
+  }
+
+  body[data-active="ppe"] #ppeTable::-webkit-scrollbar-thumb:hover {
+    background: #71839b !important;
+  }
+}
