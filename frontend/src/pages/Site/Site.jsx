@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,6 +7,7 @@ import "./CreateSiteModal.css";
 
 import bgImage from "../../assets/images/landing-page-background.jpg";
 import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
+import API_BASE_URL from "../../config/api";
 
 function Site() {
   const navigate = useNavigate();
@@ -88,7 +90,7 @@ function Site() {
       setIsVerifying(true);
 
       const response = await fetch(
-        "http://127.0.0.1:5000/api/sites/verify",
+        `${API_BASE_URL}/api/sites/verify`,
         {
           method: "POST",
           headers: {

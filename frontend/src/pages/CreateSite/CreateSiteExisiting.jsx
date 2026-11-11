@@ -1,5 +1,8 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import API_BASE_URL from "../../config/api";
 
 import "./CreateSite.css";
 import bgImage from "../../assets/images/landing-page-background.jpg";
@@ -76,7 +79,7 @@ function CreateSiteExisiting() {
       // -------------------------
 
       const response = await fetch(
-        "http://127.0.0.1:5000/api/sites/create-existing",
+        `${API_BASE_URL}/api/sites/create-existing`,
         {
           method: "POST",
           headers: {

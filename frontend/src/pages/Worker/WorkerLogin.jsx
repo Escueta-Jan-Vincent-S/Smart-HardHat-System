@@ -1,12 +1,13 @@
+
 import { useState } from "react";
+
+import API_BASE_URL from "../../config/api";
 
 import bgImage from "../../assets/images/landing-page-background.jpg";
 import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
 
 import "../Site/Site.css";
 import "./WorkerLogin.css";
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000";
 
 function HardhatIcon({ className = "" }) {
   return (
@@ -123,7 +124,7 @@ function WorkerLogin() {
       }
 
       const response = await fetch(
-        `${API_BASE}/api/workers/available-hardhats?${query.toString()}`,
+        `${API_BASE_URL}/api/workers/available-hardhats?${query.toString()}`,
         {
           headers: {
             Accept: "application/json",
@@ -223,7 +224,7 @@ function WorkerLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE}/api/workers/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/workers/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

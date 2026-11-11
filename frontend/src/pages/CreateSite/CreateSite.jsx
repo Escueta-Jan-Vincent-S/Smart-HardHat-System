@@ -1,5 +1,8 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import API_BASE_URL from "../../config/api";
 
 import "./CreateSite.css";
 
@@ -92,7 +95,7 @@ function CreateSite() {
       // -------------------------
 
       const response = await fetch(
-        "http://127.0.0.1:5000/api/sites/create",
+        `${API_BASE_URL}/api/sites/create`,
         {
           method: "POST",
 
@@ -324,7 +327,8 @@ function CreateSite() {
               placeholder="Example: San Roque"
               value={barangay}
               onChange={(e) =>
-                setBarangay(e.target.value)
+                setBarangay(e.target.value
+                )
               }
               disabled={isSubmitting}
             />

@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Reuse the same styles and background as the existing Site.jsx page.
 import "../Site/Site.css";
 import bgImage from "../../assets/images/landing-page-background.jpg";
 import hardhatLogo from "../../assets/images/hardhat_logo.jpg";
+import API_BASE_URL from "../../config/api";
 
 function DashboardLogin() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ function DashboardLogin() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/dashboard/login",
+        `${API_BASE_URL}/api/dashboard/login`,
         {
           method: "POST",
           headers: {
