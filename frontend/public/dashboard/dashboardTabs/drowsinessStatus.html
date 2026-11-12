@@ -13,6 +13,7 @@
     />
 
     <link rel="stylesheet" href="../dashboard.css" />
+    <link rel="stylesheet" href="drowsinessStatusResponsive.css" />
   </head>
 
   <body data-active="drowsy" data-navset="dashboard">
@@ -22,7 +23,7 @@
 
       <!-- Summary Cards -->
       <section
-        class="dcard stat g-green"
+        class="dcard stat g-green drowsy-summary-card drowsy-summary-normal"
         style="left:325px;top:160px;width:345px;height:135px"
       >
         <h3>Normal</h3>
@@ -35,7 +36,7 @@
       </section>
 
       <section
-        class="dcard stat g-red"
+        class="dcard stat g-red drowsy-summary-card drowsy-summary-drowsy"
         style="left:700px;top:160px;width:345px;height:135px"
       >
         <h3>Drowsy</h3>
@@ -48,7 +49,7 @@
       </section>
 
       <section
-        class="dcard stat g-gray"
+        class="dcard stat g-gray drowsy-summary-card drowsy-summary-unmonitored"
         style="left:1075px;top:160px;width:345px;height:135px"
       >
         <h3>Unmonitored</h3>
@@ -60,18 +61,21 @@
         </svg>
       </section>
 
-      <!-- Status Table -->
+      <!-- Drowsiness Status Table -->
       <section
-        class="dcard g-panel"
+        class="dcard g-panel drowsy-table-card"
         style="left:325px;top:325px;width:1095px;height:300px"
       >
         <h3>Drowsiness Status Table</h3>
-        <div class="tbl" id="drTable"></div>
+
+        <div class="tbl" id="drTable">
+          <p class="drowsy-loading">Loading drowsiness data...</p>
+        </div>
       </section>
 
-      <!-- Trend Chart -->
+      <!-- Drowsiness Trend -->
       <section
-        class="dcard g-panel"
+        class="dcard g-panel drowsy-trend-card"
         style="left:325px;top:655px;width:1095px;height:337px"
       >
         <h3>Drowsiness Trend</h3>
@@ -82,7 +86,9 @@
           <span class="pill u">Unmonitored</span>
         </div>
 
-        <div class="trend" id="trend"></div>
+        <div class="trend" id="trend">
+          <p>Loading trend data...</p>
+        </div>
       </section>
 
     </div>
@@ -90,7 +96,7 @@
     <!-- Shared Dashboard Layout -->
     <script type="module" src="js/dashboardLayout.js"></script>
 
-    <!-- Drowsiness Status Module -->
-    <script type="module" src="js/pages/drowsinessStatus.js"></script>
+    <!-- Existing Drowsiness Status Functionality -->
+    <script src="../drowsinessStatus.js"></script>
   </body>
 </html>
