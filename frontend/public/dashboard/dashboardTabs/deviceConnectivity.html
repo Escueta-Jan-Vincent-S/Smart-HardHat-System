@@ -13,16 +13,16 @@
     />
 
     <link rel="stylesheet" href="../dashboard.css" />
+    <link rel="stylesheet" href="deviceConnectivityResponsive.css" />
   </head>
 
   <body data-active="devices" data-navset="dashboard">
     <div id="app">
-
       <h1 class="dash-title">Device Connectivity</h1>
 
-      <!-- Summary Cards -->
+      <!-- Connected Summary -->
       <section
-        class="dcard stat g-green"
+        class="dcard stat g-green device-summary-card device-summary-connected"
         style="left:325px;top:160px;width:520px;height:135px"
       >
         <h3>Connected</h3>
@@ -34,8 +34,9 @@
         </svg>
       </section>
 
+      <!-- Disconnected Summary -->
       <section
-        class="dcard stat g-red"
+        class="dcard stat g-red device-summary-card device-summary-disconnected"
         style="left:900px;top:160px;width:520px;height:135px"
       >
         <h3>Disconnected</h3>
@@ -47,18 +48,21 @@
         </svg>
       </section>
 
-      <!-- Status Table -->
+      <!-- Device Connectivity Table -->
       <section
-        class="dcard g-panel"
+        class="dcard g-panel device-table-card"
         style="left:325px;top:325px;width:1095px;height:300px"
       >
         <h3>Device Connectivity Table</h3>
-        <div class="tbl" id="devStatusTable"></div>
+
+        <div class="tbl" id="devStatusTable">
+          <p class="device-loading">Loading device connectivity...</p>
+        </div>
       </section>
 
-      <!-- Trend Chart -->
+      <!-- Device Connectivity Trend -->
       <section
-        class="dcard g-panel"
+        class="dcard g-panel device-trend-card"
         style="left:325px;top:655px;width:1095px;height:337px"
       >
         <h3>Device Connectivity Trend</h3>
@@ -68,15 +72,16 @@
           <span class="pill d">Offline</span>
         </div>
 
-        <div class="trend" id="devTrend"></div>
+        <div class="trend" id="devTrend">
+          <p class="device-loading">Loading connectivity trend...</p>
+        </div>
       </section>
-
     </div>
 
     <!-- Shared Dashboard Layout -->
     <script type="module" src="js/dashboardLayout.js"></script>
 
-    <!-- Device Connectivity Module -->
-    <script type="module" src="js/pages/deviceConnectivity.js"></script>
+    <!-- Existing Device Connectivity Logic -->
+    <script src="../deviceConnectivity.js"></script>
   </body>
 </html>
