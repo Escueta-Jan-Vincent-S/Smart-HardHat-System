@@ -35,6 +35,57 @@ if (document.body.dataset.active === "account") {
         });
 
         // ========================================================
+        // SHOW / HIDE PIN
+        // ========================================================
+
+        const eyeIcons = form.querySelectorAll(".pin-icon-end");
+
+        eyeIcons.forEach((eyeIcon) => {
+            const pinField = eyeIcon.closest(".pin-field");
+            const pinInput = pinField?.querySelector("input");
+
+            if (!pinInput) return;
+
+            // Make the existing eye icon interactive.
+            eyeIcon.style.cursor = "pointer";
+            eyeIcon.style.pointerEvents = "auto";
+            eyeIcon.setAttribute("role", "button");
+            eyeIcon.setAttribute("tabindex", "0");
+            eyeIcon.setAttribute("aria-label", "Show PIN");
+            eyeIcon.setAttribute("aria-pressed", "false");
+
+            function togglePinVisibility() {
+                const isHidden = pinInput.type === "password";
+
+                pinInput.type = isHidden ? "text" : "password";
+
+                eyeIcon.setAttribute(
+                    "aria-label",
+                    isHidden ? "Hide PIN" : "Show PIN"
+                );
+
+                eyeIcon.setAttribute(
+                    "aria-pressed",
+                    isHidden ? "true" : "false"
+                );
+            }
+
+            // Mouse / touchscreen click.
+            eyeIcon.addEventListener("click", (event) => {
+                event.preventDefault();
+                togglePinVisibility();
+            });
+
+            // Keyboard support.
+            eyeIcon.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    togglePinVisibility();
+                }
+            });
+        });
+
+        // ========================================================
         // STATUS MESSAGE
         // ========================================================
 
@@ -169,6 +220,16 @@ if (document.body.dataset.active === "account") {
                 );
 
                 form.reset();
+
+                // Ensure PIN fields return to hidden state.
+                pinInputs.forEach((input) => {
+                    input.type = "password";
+                });
+
+                eyeIcons.forEach((eyeIcon) => {
+                    eyeIcon.setAttribute("aria-label", "Show PIN");
+                    eyeIcon.setAttribute("aria-pressed", "false");
+                });
 
             } catch (error) {
                 console.error(
