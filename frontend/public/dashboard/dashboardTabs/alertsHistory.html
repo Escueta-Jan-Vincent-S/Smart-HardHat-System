@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>SMSYS - Alerts History</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+
+    <link rel="stylesheet" href="../dashboard.css" />
+    <link rel="stylesheet" href="alertsHistoryResponsive.css" />
+  </head>
+
+  <body data-active="history" data-navset="dashboard">
+    <div id="app">
+      <h1 class="dash-title">Alerts History</h1>
+
+      <!-- Date Picker -->
+      <div class="date-wrap alerts-date-wrap">
+        <button type="button" class="date-btn" id="dateBtn">
+          <span id="dateText"></span>
+
+          <svg viewBox="0 0 24 24">
+            <path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zm-2 8v9h14v-9zm2 2h3v3H7z"/>
+          </svg>
+        </button>
+
+        <input
+          type="date"
+          id="dateInput"
+          tabindex="-1"
+          aria-label="Select date"
+        />
+      </div>
+
+      <!-- Alerts History Panel -->
+      <section class="dcard g-panel alerts-history-card">
+        <div class="hist">
+
+          <!-- PPE Alerts -->
+          <div class="hsec alerts-section">
+            <h4>PPE Alerts History</h4>
+
+            <div class="htbl" id="histPPE"></div>
+
+            <div class="hbtn-wrap" id="btnPPE"></div>
+          </div>
+
+          <!-- Drowsiness Alerts -->
+          <div class="hsec alerts-section">
+            <h4>Drowsiness Alerts History</h4>
+
+            <div class="htbl" id="histDrowsy"></div>
+
+            <div class="hbtn-wrap" id="btnDrowsy"></div>
+          </div>
+
+          <!-- Device Connectivity Alerts -->
+          <div class="hsec alerts-section">
+            <h4>Device Connectivity Alerts History</h4>
+
+            <div class="htbl" id="histDev"></div>
+
+            <div class="hbtn-wrap" id="btnDev"></div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- Shared Dashboard Layout -->
+    <script type="module" src="js/dashboardLayout.js"></script>
+
+    <!-- Alerts History Module -->
+    <script type="module" src="js/pages/alertsHistory.js"></script>
+  </body>
+</html>

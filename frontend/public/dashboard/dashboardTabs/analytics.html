@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMSYS - Analytics</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="../dashboard.css" />
+  </head>
+  <body data-active="analytics" data-navset="dashboard">
+    <div id="app">
+      <h1 class="dash-title">Analytics</h1>
+
+      <!-- Date picker -->
+      <div class="date-wrap">
+        <button type="button" class="date-btn" id="anDateBtn">
+          <span id="anDateText"></span>
+          <svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zm-2 8v9h14v-9zm2 2h3v3H7z"/></svg>
+        </button>
+        <input type="date" id="anDateInput" tabindex="-1" aria-label="Select date" />
+      </div>
+
+      <!-- Row 1 -->
+      <section class="dcard g-panel" style="left:325px;top:205px;width:540px;height:385px">
+        <h3>PPE Status Breakdown</h3>
+        <div class="pie-wrap abreak">
+          <div class="pie" id="anPie"></div>
+          <div class="legend" id="anLegend"></div>
+        </div>
+      </section>
+      <section class="dcard g-panel" style="left:880px;top:205px;width:540px;height:385px">
+        <h3>Drowsiness Trend</h3>
+        <div class="achart">
+          <div class="alegend"><span class="pill n">Normal</span><span class="pill d">Drowsy</span><span class="pill u">Unmonitored</span></div>
+          <div class="ascroll" id="anDrowsy"></div>
+        </div>
+      </section>
+
+      <!-- Row 2 -->
+      <section class="dcard g-panel" style="left:325px;top:607px;width:540px;height:385px">
+        <h3>Device Connectivity Trend</h3>
+        <div class="achart">
+          <div class="alegend"><span class="pill n">Online</span><span class="pill d">Offline</span></div>
+          <div class="ascroll" id="anDevices"></div>
+        </div>
+      </section>
+      <section class="dcard g-panel" style="left:880px;top:607px;width:540px;height:385px">
+        <h3>Localization Trend</h3>
+        <div class="achart">
+          <div class="alegend"><span class="pill n">Localized</span><span class="pill d">Unlocalized</span></div>
+          <div class="ascroll" id="anZones"></div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="js/dashboardLayout.js"></script>
+    <script type="module" src="js/pages/analytics.js"></script>
+  </body>
+</html>

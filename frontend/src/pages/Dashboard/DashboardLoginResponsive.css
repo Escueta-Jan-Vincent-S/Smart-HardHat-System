@@ -1,0 +1,162 @@
+
+@media (min-width: 769px) and (max-height: 700px) {
+  .dashboard-login-page {
+    padding: 10px 24px !important;
+    overflow-y: auto;
+  }
+
+  .dashboard-login-page .dashboard-login-panel {
+    width: min(100%, 900px) !important;
+    max-width: 900px !important;
+    min-height: auto !important;
+    padding: 12px 28px !important;
+    margin: auto !important;
+    border-radius: 22px !important;
+  }
+
+  /* Header */
+  .dashboard-login-page .dashboard-login-header {
+    gap: 12px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .dashboard-login-page .dashboard-login-header .site-logo {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .dashboard-login-page .site-brand h2 {
+    font-size: 30px !important;
+    line-height: 1.1 !important;
+  }
+
+  .dashboard-login-page .site-brand p {
+    font-size: 11px !important;
+  }
+
+  /* Page title */
+  .dashboard-login-page .dashboard-login-title {
+    margin: 5px 0 9px !important;
+    text-align: center;
+  }
+
+  .dashboard-login-page .dashboard-login-title h1 {
+    font-size: 26px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 3px !important;
+  }
+
+  .dashboard-login-page .dashboard-login-title p {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+  }
+
+  /* Single-column form */
+  .dashboard-login-page .dashboard-login-card {
+    width: 100% !important;
+    max-width: 540px !important;
+    margin: 0 auto !important;
+    padding: 13px 24px !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    row-gap: 2px !important;
+    align-items: center;
+  }
+
+  /* Field positions */
+  .dashboard-login-page .dashboard-login-card > label:nth-of-type(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .dashboard-login-page .dashboard-login-card > .site-input:nth-of-type(1) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .dashboard-login-page .dashboard-login-card > label:nth-of-type(2) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .dashboard-login-page .dashboard-login-card > .site-input:nth-of-type(2) {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  .dashboard-login-page .dashboard-login-card > label:nth-of-type(3) {
+    grid-column: 1;
+    grid-row: 5;
+  }
+
+  .dashboard-login-page .dashboard-login-card > .site-input:nth-of-type(3) {
+    grid-column: 1;
+    grid-row: 6;
+  }
+
+  .dashboard-login-page .dashboard-login-card > label:nth-of-type(4) {
+    grid-column: 1;
+    grid-row: 7;
+  }
+
+  .dashboard-login-page .dashboard-login-card > .site-input:nth-of-type(4) {
+    grid-column: 1;
+    grid-row: 8;
+  }
+
+  /* Labels */
+  .dashboard-login-page .dashboard-login-card > label {
+    margin: 0 0 3px !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Inputs */
+  .dashboard-login-page .dashboard-login-card .site-input {
+    grid-column: 1 !important;
+    width: 100% !important;
+    min-width: 0;
+    height: 39px !important;
+    min-height: 39px !important;
+    margin: 0 0 5px !important;
+    padding: 0 12px !important;
+    border-radius: 9px !important;
+  }
+
+  .dashboard-login-page .dashboard-login-card .site-input span {
+    font-size: 15px !important;
+    flex-shrink: 0;
+  }
+
+  .dashboard-login-page .dashboard-login-card .site-input input {
+    min-width: 0;
+    width: 100%;
+    font-size: 14px !important;
+  }
+
+  .dashboard-login-page .dashboard-login-card .site-input input::placeholder {
+    font-size: 13px !important;
+  }
+
+  /* Error */
+  .dashboard-login-page .dashboard-login-error {
+    grid-column: 1;
+    grid-row: 9;
+    margin: 0 0 4px !important;
+    font-size: 12px !important;
+    text-align: center;
+  }
+
+  /* Continue button */
+  .dashboard-login-page .dashboard-login-card .verify-btn {
+    grid-column: 1;
+    grid-row: 10;
+    width: 100% !important;
+    min-height: 41px !important;
+    margin: 3px 0 0 !important;
+    padding: 8px 14px !important;
+    font-size: 14px !important;
+    border-radius: 9px !important;
+  }
+}
