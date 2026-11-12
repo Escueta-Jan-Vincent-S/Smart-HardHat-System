@@ -4,13 +4,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>SMSYS - Zone Localization</title>
 
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     />
+
     <link rel="stylesheet" href="../dashboard.css" />
+    <link rel="stylesheet" href="zoneLocalizationResponsive.css" />
   </head>
 
   <body data-active="zone" data-navset="dashboard">
@@ -18,9 +21,9 @@
 
       <h1 class="dash-title">Worker Localization</h1>
 
-      <!-- Summary Cards -->
+      <!-- Localized Summary -->
       <section
-        class="dcard stat g-green"
+        class="dcard stat g-green zone-summary-card zone-summary-localized"
         style="left:325px;top:160px;width:520px;height:135px"
       >
         <h3>Localized</h3>
@@ -32,8 +35,9 @@
         </svg>
       </section>
 
+      <!-- Unlocalized Summary -->
       <section
-        class="dcard stat g-red"
+        class="dcard stat g-red zone-summary-card zone-summary-unlocalized"
         style="left:900px;top:160px;width:520px;height:135px"
       >
         <h3>Unlocalized</h3>
@@ -45,18 +49,21 @@
         </svg>
       </section>
 
-      <!-- Status Table -->
+      <!-- Worker Location Table -->
       <section
-        class="dcard g-panel"
+        class="dcard g-panel zone-table-card"
         style="left:325px;top:325px;width:1095px;height:300px"
       >
         <h3>Zone Localization Table</h3>
-        <div class="tbl" id="zoneStatusTable"></div>
+
+        <div class="tbl" id="zoneStatusTable">
+          <p class="zone-loading">Loading worker locations...</p>
+        </div>
       </section>
 
-      <!-- Trend Chart -->
+      <!-- Localization Trend -->
       <section
-        class="dcard g-panel"
+        class="dcard g-panel zone-trend-card"
         style="left:325px;top:655px;width:1095px;height:337px"
       >
         <h3>Localization Trend</h3>
@@ -66,7 +73,9 @@
           <span class="pill d">Unlocalized</span>
         </div>
 
-        <div class="trend" id="zoneTrend"></div>
+        <div class="trend" id="zoneTrend">
+          <p class="zone-loading">Loading localization trend...</p>
+        </div>
       </section>
 
     </div>
@@ -74,5 +83,7 @@
     <!-- Shared Dashboard Layout -->
     <script type="module" src="js/dashboardLayout.js"></script>
 
+    <!-- Existing Zone Localization Logic -->
+    <script type="module" src="js/pages/drowsinessStatus.js"></script>
   </body>
 </html>
