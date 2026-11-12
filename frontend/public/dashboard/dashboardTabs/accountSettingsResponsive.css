@@ -1,0 +1,679 @@
+
+/* ============================================================
+   SMSYS - ACCOUNT SETTINGS
+   Jetson Nano touchscreen: 1024 x 600
+   ============================================================ */
+
+/* ============================================================
+   ORIGINAL ACCOUNT SETTINGS DESIGN
+   ============================================================ */
+
+body[data-active="account"] .panel-card {
+  position: absolute;
+  top: 160px;
+  left: 325px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 650px;
+  padding: 28px;
+  box-sizing: border-box;
+  background: rgba(2, 25, 55, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body[data-active="account"] .panel-icon {
+  display: block;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px;
+  max-width: 32px;
+  flex: 0 0 32px;
+  fill: #ffb51b;
+  overflow: visible;
+}
+
+body[data-active="account"] .panel-card h2 {
+  margin: 0;
+  color: #ffb51b;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+body[data-active="account"] .panel-desc {
+  margin: 0 0 8px;
+  color: #c2ccda;
+  font-size: 13px;
+}
+
+/* PIN FORM */
+
+body[data-active="account"] .pin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  width: 100%;
+  margin: 0;
+}
+
+body[data-active="account"] .pin-form label {
+  display: block;
+  margin-top: 5px;
+  color: #e3e9f2;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* INPUT FIELDS */
+
+body[data-active="account"] .pin-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0 13px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+}
+
+body[data-active="account"] .pin-icon-start,
+body[data-active="account"] .pin-icon-end {
+  display: block;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px;
+  max-width: 20px;
+  flex: 0 0 20px;
+  fill: #ffb51b;
+}
+
+body[data-active="account"] .pin-field input {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+body[data-active="account"] .pin-field input::placeholder {
+  color: #aebbd0;
+}
+
+body[data-active="account"] .pin-field:focus-within {
+  border-color: #ffb51b;
+}
+
+/* BUTTONS */
+
+body[data-active="account"] .pin-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin-top: 15px;
+}
+
+body[data-active="account"] .pin-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 145px;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+body[data-active="account"] .pin-actions .btn svg {
+  display: block;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  max-width: 18px;
+  flex: 0 0 18px;
+  fill: currentColor;
+}
+
+body[data-active="account"] .pin-actions .btn-primary {
+  color: #071426;
+  background: #ffb51b;
+  border: 1px solid #ffb51b;
+}
+
+body[data-active="account"] .pin-actions .btn-primary:hover {
+  background: #ffc54d;
+}
+
+body[data-active="account"] .pin-actions .btn-outline {
+  color: #ffb51b;
+  background: transparent;
+  border: 1px solid #ffb51b;
+}
+
+body[data-active="account"] .pin-actions .btn-outline:hover {
+  color: #071426;
+  background: #ffb51b;
+}
+
+body[data-active="account"] .pin-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* STATUS MESSAGE */
+
+body[data-active="account"] #pin-message {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   JETSON NANO RESPONSIVE LAYOUT
+   ============================================================ */
+
+@media (min-width: 769px) and (max-height: 700px) {
+
+  /* MAIN PAGE */
+
+  body[data-active="account"] #app.page {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    transform: none !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+  }
+
+  /* SIDEBAR */
+
+  body[data-active="account"] .nav {
+    position: fixed !important;
+    top: 10px !important;
+    left: 10px !important;
+    width: 205px !important;
+    height: calc(100vh - 20px) !important;
+  }
+
+  body[data-active="account"] .nav-head {
+    height: 68px !important;
+    gap: 10px !important;
+    padding-left: 12px !important;
+    border-radius: 18px 18px 0 0 !important;
+  }
+
+  body[data-active="account"] .nav-head img {
+    width: 38px !important;
+    height: 38px !important;
+    flex-shrink: 0 !important;
+  }
+
+  body[data-active="account"] .nav-head strong {
+    font-size: 21px !important;
+    line-height: 1.1 !important;
+  }
+
+  body[data-active="account"] .nav-head small {
+    font-size: 9px !important;
+    white-space: nowrap !important;
+  }
+
+  body[data-active="account"] .nav-body {
+    top: 68px !important;
+    border-radius: 0 0 28px 18px !important;
+
+    -webkit-mask-size:
+      100% 100%,
+      21px 42px,
+      calc(100% - 78px) 42px !important;
+
+    -webkit-mask-position:
+      0 0,
+      58px var(--cut),
+      78px var(--cut) !important;
+
+    mask-size:
+      100% 100%,
+      21px 42px,
+      calc(100% - 78px) 42px !important;
+
+    mask-position:
+      0 0,
+      58px var(--cut),
+      78px var(--cut) !important;
+  }
+
+  body[data-active="account"] .nav-rail {
+    top: 80px !important;
+    width: 52px !important;
+    border-radius: 16px 0 0 18px !important;
+  }
+
+  body[data-active="account"] .nav-notch {
+    top: calc(68px + var(--cut)) !important;
+    left: 58px !important;
+    height: 42px !important;
+    border-radius: 21px 0 0 21px !important;
+  }
+
+  body[data-active="account"] .nav {
+    --cut: 382px;
+  }
+
+  body[data-active="account"] .nav-list {
+    gap: 4px !important;
+    padding-top: 82px !important;
+    padding-bottom: 12px !important;
+  }
+
+  body[data-active="account"] .nav-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 42px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+  }
+
+  body[data-active="account"] .nav-item svg {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    flex-shrink: 0 !important;
+    margin: 0 30px 0 14px !important;
+  }
+
+  /* TOPBAR */
+
+  body[data-active="account"] .topbar {
+    position: fixed !important;
+    top: 10px !important;
+    left: 235px !important;
+    display: flex !important;
+    align-items: center !important;
+    width: calc(100vw - 250px) !important;
+    height: 48px !important;
+    z-index: 100 !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="account"] .topbar-item {
+    min-width: 0 !important;
+    padding-left: 12px !important;
+  }
+
+  body[data-active="account"] .topbar small {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+  }
+
+  body[data-active="account"] .topbar .value {
+    font-size: 11px !important;
+  }
+
+  /* SITE SELECTOR */
+
+  body[data-active="account"] .topbar-site {
+    position: relative !important;
+    width: 25% !important;
+    padding-left: 0 !important;
+    border-left: 0 !important;
+    z-index: 102 !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="account"] .topbar-site .dropdown {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="account"] .site-toggle {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 20px 0 5px !important;
+  }
+
+  body[data-active="account"] .site-toggle .chevron {
+    position: absolute !important;
+    top: 30px !important;
+    right: 90px !important;
+    width: 9px !important;
+    height: 9px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body[data-active="account"] .topbar-site .dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 5px !important;
+    z-index: 200 !important;
+    min-width: 190px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
+
+  /* DATE AND TIME */
+
+  body[data-active="account"] .topbar-datetime {
+    width: 42% !important;
+    padding-left: 12px !important;
+  }
+
+  body[data-active="account"] .datetime {
+    gap: 10px !important;
+  }
+
+  body[data-active="account"] .divider {
+    width: 1px !important;
+    height: 15px !important;
+  }
+
+  /* NOTIFICATIONS */
+
+  body[data-active="account"] .topbar-notifications {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 9% !important;
+    padding-left: 0 !important;
+    overflow: visible !important;
+    z-index: 102 !important;
+  }
+
+  body[data-active="account"] .topbar-notifications .dropdown {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  body[data-active="account"] .bell-toggle {
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+  }
+
+  body[data-active="account"] .bell-toggle > svg {
+    width: 25px !important;
+    height: 25px !important;
+  }
+
+  body[data-active="account"] .bell-toggle .badge {
+    position: absolute !important;
+    top: 11px !important;
+    right: 18px !important;
+    min-width: 14px !important;
+    height: 14px !important;
+    font-size: 9px !important;
+    line-height: 14px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body[data-active="account"] .notifications-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: -35px !important;
+    left: auto !important;
+    z-index: 200 !important;
+    width: 280px !important;
+  }
+
+  /* SUPERVISOR ACCOUNT */
+
+  body[data-active="account"] .topbar-account {
+    flex: 1 !important;
+    gap: 8px !important;
+    padding-left: 10px !important;
+  }
+
+  body[data-active="account"] .topbar-account svg {
+    width: 34px !important;
+    height: 34px !important;
+    flex-shrink: 0 !important;
+  }
+
+  body[data-active="account"] .topbar-account span {
+    max-width: 130px !important;
+    font-size: 11px !important;
+  }
+
+  /* PAGE TITLE */
+
+  body[data-active="account"] .dash-title {
+    position: fixed !important;
+    top: 70px !important;
+    left: 235px !important;
+    margin: 0 !important;
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    z-index: 5 !important;
+  }
+
+  /* MAIN CONTENT */
+
+  body[data-active="account"] #app.page > main {
+    position: absolute !important;
+    top: 105px !important;
+    left: 235px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    width: calc(100vw - 250px) !important;
+    height: calc(100vh - 115px) !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 5px 18px 0 !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    scrollbar-width: thin !important;
+    scrollbar-color:
+      rgba(254, 175, 28, 0.65)
+      rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* ACCOUNT SETTINGS CARD */
+
+  body[data-active="account"] #app.page > main > .panel-card {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+
+    width: 100% !important;
+    max-width: 560px !important;
+    min-height: 0 !important;
+    height: auto !important;
+
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+
+    margin: 0 auto !important;
+    padding: 14px 18px !important;
+
+    gap: 7px !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-active="account"] .panel-icon {
+    width: 25px !important;
+    height: 25px !important;
+    min-width: 25px !important;
+    max-width: 25px !important;
+    flex: 0 0 25px !important;
+  }
+
+  body[data-active="account"] .panel-card h2 {
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+  }
+
+  body[data-active="account"] .panel-desc {
+    margin: 0 0 3px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* PIN FORM */
+
+  body[data-active="account"] .pin-form {
+    gap: 5px !important;
+  }
+
+  body[data-active="account"] .pin-form label {
+    margin-top: 3px !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+  }
+
+  /* PIN INPUTS */
+
+  body[data-active="account"] .pin-field {
+    height: 38px !important;
+    min-height: 38px !important;
+    gap: 9px !important;
+    padding: 0 10px !important;
+    border-radius: 7px !important;
+  }
+
+  body[data-active="account"] .pin-icon-start,
+  body[data-active="account"] .pin-icon-end {
+    width: 17px !important;
+    height: 17px !important;
+    min-width: 17px !important;
+    max-width: 17px !important;
+    flex: 0 0 17px !important;
+  }
+
+  body[data-active="account"] .pin-field input {
+    font-size: 12px !important;
+  }
+
+  /* STATUS MESSAGE */
+
+  body[data-active="account"] #pin-message {
+    margin: 0 0 5px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* ACTION BUTTONS */
+
+  body[data-active="account"] .pin-actions {
+    gap: 9px !important;
+    margin-top: 8px !important;
+  }
+
+  body[data-active="account"] .pin-actions .btn {
+    width: 125px !important;
+    min-height: 37px !important;
+    padding: 7px 10px !important;
+    gap: 6px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+
+  body[data-active="account"] .pin-actions .btn svg {
+    width: 15px !important;
+    height: 15px !important;
+    min-width: 15px !important;
+    max-width: 15px !important;
+    flex: 0 0 15px !important;
+  }
+
+  /* SCROLLBARS */
+
+  body[data-active="account"] #app.page > main::-webkit-scrollbar {
+    width: 7px !important;
+  }
+
+  body[data-active="account"] #app.page > main::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+  }
+
+  body[data-active="account"] #app.page > main::-webkit-scrollbar-thumb {
+    background: rgba(254, 175, 28, 0.65) !important;
+    border-radius: 10px !important;
+  }
+
+  /* LOGOUT MODAL */
+
+  body[data-active="account"] #app.page > .modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 300 !important;
+  }
+
+  body[data-active="account"] .modal-box {
+    width: min(90vw, 380px) !important;
+    padding: 24px !important;
+    border-radius: 14px !important;
+  }
+
+  body[data-active="account"] .modal-box h2 {
+    font-size: 21px !important;
+  }
+
+  body[data-active="account"] .modal-box p {
+    margin: 12px 0 20px !important;
+    font-size: 15px !important;
+  }
+
+  body[data-active="account"] .modal-box .btn {
+    height: 43px !important;
+    font-size: 14px !important;
+  }
+}
